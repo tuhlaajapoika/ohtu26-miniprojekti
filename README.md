@@ -21,7 +21,7 @@ User story on valmis, kun:
 - Storyn hyväksymiskriteerit täyttyvät
   - Sprintistä 2 alkaen hyväksymiskriteerit on kirjattu Robot Framework -testeiksi ja testit menevät läpi
 - Toteutettu koodi on yksikkötestattu ja testikattavuus on kohtuullinen (tavoite yli 70 %)
-- Kaikki testit menevät läpi GitHub Actionsissa
+- Kaikki testit menevät läpi GitHub Actionsissa ja asiakas voi seurata tilannetta CI-palvelusta
 - Koodi on yhdistetty main-haaraan, eikä main ole rikki
 - Koodi noudattaa projektin Pylint-sääntöjä
 - Koodi on luettavaa: muuttujat, funktiot ja luokat on nimetty kuvaavasti, ja koodi noudattaa sovittua kerrosarkkitehtuuria
