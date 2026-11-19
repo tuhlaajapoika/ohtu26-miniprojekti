@@ -10,3 +10,6 @@ Yleistä miniprojektista
 
 - [Ohjeet](https://ohjelmistotuotanto-jyu.github.io/miniprojekti/)
 - [Miniprojektin kuvaus](https://ohjelmistotuotanto-jyu.github.io/speksi/)
+
+Dod
+- https://docs.google.com/document/d/1ebvisvEpt2zk7hbKqVMPeQ86dP0BDcBe4Sc46cNuJJg/edit?usp=sharing
