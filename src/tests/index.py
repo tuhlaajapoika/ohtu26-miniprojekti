@@ -1,4 +1,4 @@
-while input != "quit":
+while input != "2":
     query = input("1 = uusi viite,  2 = lopeta: ")
 
     author = input("Tekijä(t): ")
