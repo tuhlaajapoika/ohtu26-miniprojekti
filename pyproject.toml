@@ -1,0 +1,36 @@
+[project]
+name = "ohtu26-miniprojekti"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+#authors = [
+#    { name = "", email = "" }
+#]
+requires-python = ">=3.14"
+dependencies = [
+    "robotframework>=7.5.1",
+]
+
+[dependency-groups]
+dev = [
+    "coverage>=7.17.3",
+    "pylint>=4.1.4",
+    "pytest>=9.2.0",
+    "ruff>=0.17.6",
+]
+
+[project.scripts]
+ohtu26-miniprojekti = "ohtu26_miniprojekti:main"
+
+[build-system]
+requires = ["uv_build>=0.13.9,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+# same as black, default
+line-length = 88
+indent-width = 4
+
+[tool.ruff.format]
+# Like Black, respect magic trailing commas, default.
+skip-magic-trailing-comma = false
