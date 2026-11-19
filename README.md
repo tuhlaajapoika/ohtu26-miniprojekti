@@ -1,5 +1,7 @@
 # Miniprojekti, Ohjelmistotuotanto 2026
 
+[![CI](https://github.com/tuhlaajapoika/ohtu26-miniprojekti/actions/workflows/main.yml/badge.svg)](https://github.com/tuhlaajapoika/ohtu26-miniprojekti/actions/workflows/main.yml) [![codecov](https://codecov.io/gh/tuhlaajapoika/ohtu26-miniprojekti/graph/badge.svg?token=G6GRBLNY8Y)](https://codecov.io/gh/tuhlaajapoika/ohtu26-miniprojekti)
+
 [Product backlog](https://docs.google.com/spreadsheets/d/1E46lZ89yBtTZLuqJXB9Jw-JfQkdvF5RsjIRHC4t9CJo)
 
 [Sprint backlog](https://github.com/users/tuhlaajapoika/projects/3)
