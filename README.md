@@ -4,6 +4,8 @@
 
 [Sprint backlog](https://github.com/users/tuhlaajapoika/projects/3)
 
+[Definition of Done](https://docs.google.com/document/d/1ebvisvEpt2zk7hbKqVMPeQ86dP0BDcBe4Sc46cNuJJg/edit?usp=sharing)
+
 ---
 
 Yleistä miniprojektista
@@ -11,10 +13,7 @@ Yleistä miniprojektista
 - [Ohjeet](https://ohjelmistotuotanto-jyu.github.io/miniprojekti/)
 - [Miniprojektin kuvaus](https://ohjelmistotuotanto-jyu.github.io/speksi/)
 
-Dod
-- https://docs.google.com/document/d/1ebvisvEpt2zk7hbKqVMPeQ86dP0BDcBe4Sc46cNuJJg/edit?usp=sharing
-
-- ## Definition of Done
+## Definition of Done
 
 User story on valmis, kun:
 
