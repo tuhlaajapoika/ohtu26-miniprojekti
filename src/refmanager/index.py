@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 from refmanager.app import App
 from refmanager.config import DATABASE_FILE
@@ -28,7 +29,7 @@ def main() -> None:
     )
     cmdparser.add_parser(
         "list",
-        help="Create a reference interactively",
+        help="List all references",
         # description=("")
     )
     cmdparser.add_parser(
@@ -40,10 +41,19 @@ def main() -> None:
     args = parser.parse_args()
 
     # Prepare and run
-    sqlite_repository = SqliteReferenceRepository(DATABASE_FILE)
     console_io = ConsoleIO()
-    app = App(prog_args=args, ref_repository=sqlite_repository, io=console_io)
-    app.run()
+    # try:
+    sqlite_repository = SqliteReferenceRepository(db_file=DATABASE_FILE)
+    app = App(ref_repository=sqlite_repository, io=console_io)
+    try:
+        app.run(command=args.command)
+    except KeyboardInterrupt:
+        print("\nUser interrupt captured.", console_io)
+        conn = sqlite_repository.get_db_connection()
+        conn.close()
+        sys.exit(130)
+    # except Exception as e:
+    #    print(f"{e}", console_io)
 
 
 if __name__ == "__main__":
