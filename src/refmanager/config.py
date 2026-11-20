@@ -1,1 +1,3 @@
-# Centralised configuration for db etc. if needed.
+"""Application configuration."""
+
+DATABASE_FILE = "references.db"

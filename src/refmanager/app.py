@@ -4,9 +4,9 @@ import sys
 class App:
     """Object that operates on user's commands"""
 
-    def __init__(self, prog_args, refs_dao, io):
+    def __init__(self, prog_args, ref_repository, io):
         self.args = prog_args
-        self.db = refs_dao
+        self.db = ref_repository
         self.io = io
 
     def run(self):

@@ -1,6 +1,8 @@
 import argparse
 
 from refmanager.app import App
+from refmanager.config import DATABASE_FILE
+from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
 from refmanager.io.console_io import ConsoleIO
 
 
@@ -38,9 +40,9 @@ def main() -> None:
     args = parser.parse_args()
 
     # Prepare and run
-    db = False  # ReferencesDao()
+    sqlite_repository = SqliteReferenceRepository(DATABASE_FILE)
     console_io = ConsoleIO()
-    app = App(prog_args=args, refs_dao=db, io=console_io)
+    app = App(prog_args=args, ref_repository=sqlite_repository, io=console_io)
     app.run()
 
 
