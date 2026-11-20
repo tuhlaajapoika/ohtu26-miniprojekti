@@ -15,7 +15,25 @@ Yleistä miniprojektista
 - [Ohjeet](https://ohjelmistotuotanto-jyu.github.io/miniprojekti/)
 - [Miniprojektin kuvaus](https://ohjelmistotuotanto-jyu.github.io/speksi/)
 
-## Definition of Done
+## Development
+
+Kloonaa repositorio ja suorita `uv sync`. Ohjelma voidaan suorittaa komentoriviltä:
+
+```shell
+uv run refmanager --help
+# tai
+uv run python3 src/refmanager/index.py --help
+```
+
+tai venv-ympäristössä:
+
+```shell
+refmanager --help
+# tai
+python3 src/refmanager/index.py --help
+```
+
+### Definition of Done
 
 User story on valmis, kun:
 

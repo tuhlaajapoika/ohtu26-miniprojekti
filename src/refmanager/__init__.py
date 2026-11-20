@@ -1,2 +1,4 @@
-def main() -> None:
-    print("Hello from ohtu26-miniprojekti!")
+from refmanager.index import main
+
+if __name__ == "__main__":
+    main()
