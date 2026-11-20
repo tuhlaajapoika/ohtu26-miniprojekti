@@ -1,4 +1,5 @@
-# TODO: initial starting point, refactor for project's needs
+# source: https://github.com/ohjelmistotuotanto-jyu/tehtavat
+# Use with RobotFramework
 
 
 class StubIO:

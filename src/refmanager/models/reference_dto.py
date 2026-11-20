@@ -5,8 +5,8 @@ from dataclasses import dataclass
 class ReferenceDto:
     """Data transfer object (DTO) for Reference"""
 
-    id: int
-    type: str
+    ref_id: int
+    ref_type: str
     title: str
     author: str
     year: int
