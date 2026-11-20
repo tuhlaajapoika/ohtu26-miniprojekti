@@ -12,12 +12,16 @@ To check and fix everything, including imports sort:
 
 ```shell
 uv run ruff check --fix .
+# or when venv is active
+ruff check --fix
 ```
 
 or only sort imports while excluding other checks:
 
 ```shell
 uv run ruff check --select I --fix .
+# or when venv is active
+ruff check --select I --fix
 ```
 
 ```shell
