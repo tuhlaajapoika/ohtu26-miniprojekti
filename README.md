@@ -33,6 +33,8 @@ refmanager --help
 python3 src/refmanager/index.py --help
 ```
 
+[Muita muistiinpanoja](/docs/development-notes.md)
+
 ### Definition of Done
 
 User story on valmis, kun:
