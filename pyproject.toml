@@ -3,7 +3,7 @@ requires = ["uv_build>=0.13.9,<0.14.0"]
 build-backend = "uv_build"
 
 [project]
-name = "ohtu26-miniprojekti"
+name = "refmanager"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -24,7 +24,7 @@ dev = [
 ]
 
 [project.scripts]
-ohtu26-miniprojekti = "ohtu26_miniprojekti:main"
+refmanager = "refmanager:main"
 
 
 [tool.ruff]
