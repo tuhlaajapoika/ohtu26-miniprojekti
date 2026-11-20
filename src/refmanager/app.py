@@ -2,25 +2,21 @@ import sys
 
 
 class App:
-    """Object that operates on user's commands"""
+    """A class that represents the main application for managing references."""
 
-    def __init__(self, prog_args, ref_repository, io):
-        self.args = prog_args
-        self.db = ref_repository
+    def __init__(self, ref_repository, io):
+        self.repository = ref_repository
         self.io = io
 
-    def run(self):
+    def run(self, command):
         try:
-            match self.args.command:
+            match command:
                 case "new":
-                    print("Not implemented: new")
+                    self.io.write("Not implemented: new")
                 case "list":
-                    print("Not implemented: list")
+                    self.io.write("Not implemented: list")
                 case "export":
-                    print("Not implemented: export")
+                    self.io.write("Not implemented: export")
         except RuntimeError as e:
-            print(f"ERROR: {e}", self.io)
+            self.io.write(f"{e}")
             sys.exit(1)
-        except KeyboardInterrupt:
-            print("\nUser interrupt captured.", self.io)
-            sys.exit(130)
