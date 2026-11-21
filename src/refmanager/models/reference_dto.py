@@ -11,3 +11,7 @@ class ReferenceDto:
     author: str
     year: int
     publisher: str
+    journal: str
+    volume: str
+    issue: str
+    pages: str
