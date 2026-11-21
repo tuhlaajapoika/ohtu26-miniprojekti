@@ -1,5 +1,6 @@
 import sys
 from refmanager.models.reference_dto import ReferenceDto
+from refmanager.services.reference_listing import list_references
 
 
 class App:
@@ -96,7 +97,7 @@ class App:
                     
                             
                 case "list":
-                    self.io.write("Not implemented: list")
+                    list_references(self.repository, self.io)
                 case "export":
                     self.io.write("Not implemented: export")
         except RuntimeError as e:
