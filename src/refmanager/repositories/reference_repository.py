@@ -18,9 +18,5 @@ class ReferenceRepository(ABC):
         """
 
     @abstractmethod
-    def save(self, ref: ReferenceDto) -> None:
-        """Save reference to database
-
-        Args:
-            ref (ReferenceDto): reference to be saved
-        """
+    def save(self, ref: ReferenceDto) -> int:
+        """Save reference and return its database ID."""

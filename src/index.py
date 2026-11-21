@@ -1,19 +1,25 @@
-TYPES = {"1": "kirja", "2": "artikkeli", "3": "verkkosivu"}
+from refmanager.app import App
+from refmanager.config import DATABASE_FILE
+from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
+from refmanager.io.console_io import ConsoleIO
 
-while True:
-    query = input("1 = Lisää viite, 0 = Lopeta: ") # kysely ja lisää tai lopeta 
-    if query == "0":
-        break
+def main() -> None:
+    console_io = ConsoleIO()
+    repository = SqliteReferenceRepository(db_file=DATABASE_FILE)
+    app = App(ref_repository=repository, io=console_io)
+    
+    while True:
+        query = input("1 = Lisää viite, 0 = Lopeta: ")
+        
+        if query == "0":
+            break
+        
+        if query == "1":
+            app.run(command="new")
+        else:
+            print("Virheellinen valinta")
 
-    if query == "1":
-        author = input("Tekijä(t): ")
-        title = input("Otsikko: ")
-        year = input("Julkaisuvuosi: ")
+    repository.get_db_connection().close()
 
-        while (choice := input("Tyyppi (1 = kirja, 2 = artikkeli, 3 = verkkosivu): ")) not in TYPES:
-            print("Virheellinen valinta.")
-
-        source_type = TYPES[choice]
-        key = input("Avain (esim. ABC12): ")
-
-        print(f"Lisätty viite: {author}, {title}, {year}, {source_type}, {key}")
+if __name__ == "__main__":
+    main()

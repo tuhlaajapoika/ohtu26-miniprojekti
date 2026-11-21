@@ -51,14 +51,11 @@ class SqliteReferenceRepository(ReferenceRepository):
             )
         return None
 
-    # TODO: or only INSERT with id set to NULL?
-    def save(self, ref: ReferenceDto) -> None:
-        self.conn.execute(
-            """
-            INSERT OR REPLACE INTO
-                "references" (reference_id, type, title, author, year, publisher)
-                VALUES (?, ?, ?, ?, ?, ?);
-            """,
-            (ref.ref_id, ref.ref_type, ref.title, ref.author, ref.year, ref.publisher),
-        )
+    def save(self, ref: ReferenceDto) -> int:
+        cursor = self.conn.execute("""
+        INSERT INTO "references" (type, title, author, year, publisher)
+        VALUES (?, ?, ?, ?, ?);
+    """, (ref.ref_type, ref.title, ref.author, ref.year, ref.publisher))
+        
         self.conn.commit()
+        return cursor.lastrowid
