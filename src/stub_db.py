@@ -1,13 +1,14 @@
 import os
 import sqlite3
 
+from refmanager.config import DATABASE_FILE_TESTS
 from refmanager.db.initialize_database import initialize_database
 
 
 class StubReferenceDatabase:
     """A stub implementation of a reference database for testing purposes."""
 
-    def __init__(self, db_file="references_test.db"):
+    def __init__(self, db_file=DATABASE_FILE_TESTS):
         _dirname = os.path.dirname(__file__)
         self._test_db_file = os.path.join(_dirname, "..", db_file)
         self._conn = sqlite3.connect(self._test_db_file)

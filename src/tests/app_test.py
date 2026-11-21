@@ -3,6 +3,7 @@ import tempfile
 import unittest
 
 from refmanager.app import App
+from refmanager.config import DATABASE_FILE_TESTS
 from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
 from stub_db import StubReferenceDatabase
 from stub_io import StubIO
@@ -91,7 +92,7 @@ class TestApp(unittest.TestCase):
 
     def test_running_command_new_saves_book_to_sqlite(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            db_file = os.path.join(temp_dir, "reference_test.db")
+            db_file = os.path.join(temp_dir, DATABASE_FILE_TESTS)
             repository = SqliteReferenceRepository(db_file)
             self.addCleanup(repository.get_db_connection().close)
 

@@ -3,6 +3,7 @@ import shutil
 import tempfile
 import unittest
 
+from refmanager.config import DATABASE_FILE_TESTS
 from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
 from refmanager.models.reference_dto import ReferenceDto
 
@@ -13,7 +14,7 @@ class TestSqliteReferenceRepository(unittest.TestCase):
     def setUp(self):
         self._temp_dir = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self._temp_dir)
-        db_file = os.path.join(self._temp_dir, "references_test.db")
+        db_file = os.path.join(self._temp_dir, DATABASE_FILE_TESTS)
         self._repository = SqliteReferenceRepository(db_file)
         self.addCleanup(self._repository.close)
 

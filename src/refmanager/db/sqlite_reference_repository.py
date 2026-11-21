@@ -1,10 +1,7 @@
 import os
 import sqlite3
 
-from refmanager.db.initialize_database import (
-    create_tables,
-    table_exists,
-)
+from refmanager.db.initialize_database import initialize_database, table_exists
 from refmanager.models.reference_dto import ReferenceDto
 from refmanager.repositories.reference_repository import ReferenceRepository
 
@@ -17,10 +14,11 @@ class SqliteReferenceRepository(ReferenceRepository):
         db_full_path = os.path.join(dirname, "..", "..", "..", db_file)
         self.conn = sqlite3.connect(db_full_path)
         self.conn.row_factory = sqlite3.Row
-        create_tables(self.conn)
-
-        # remove init when create/delete program logic is implemented
-        # initialize_database(self.conn)
+        # create_tables(self.conn)
+        #
+        # Remove init and use create (above) when proper program logic is implemented.
+        # Clean database is needed until we have a stable program.
+        initialize_database(self.conn)
 
         if not table_exists(self.conn):
             raise RuntimeError("(database) 'references' table does not exist.")
