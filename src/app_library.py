@@ -8,7 +8,7 @@ class AppLibrary:
 
     def __init__(self):
         self._io = StubIO()
-        self._repository = SqliteReferenceRepository(db_file="references.db")
+        self._repository = SqliteReferenceRepository(db_file="references_test.db")
         # self._reference_service = ReferenceService
         self._app = App(ref_repository=self._repository, io=self._io)
 
