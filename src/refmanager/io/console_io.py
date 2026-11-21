@@ -1,6 +1,3 @@
-# refactor for project's needs
-
-
 class ConsoleIO:
     def write(self, value):
         print(value)
