@@ -22,16 +22,12 @@ class StubReferenceDatabase:
         os.remove(self._test_db_file)
 
     def save(self, ref):
-        self._conn.execute("""
-        INSERT OR REPLACE INTO "references"
-            (reference_id, type, title, author, year, publisher)
-        VALUES (?, ?, ?, ?, ?, ?);
-    """, (
-        ref.ref_id,
-        ref.ref_type,
-        ref.title,
-        ref.author,
-        ref.year,
-        ref.publisher
-    ))
+        self._conn.execute(
+            """
+            INSERT OR REPLACE INTO "references"
+                (reference_id, type, title, author, year, publisher)
+            VALUES (?, ?, ?, ?, ?, ?);
+            """,
+            (ref.ref_id, ref.ref_type, ref.title, ref.author, ref.year, ref.publisher),
+        )
         self._conn.commit()

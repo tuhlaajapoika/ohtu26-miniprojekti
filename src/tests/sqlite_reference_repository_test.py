@@ -1,7 +1,7 @@
 import os
+import shutil
 import tempfile
 import unittest
-import shutil
 
 from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
 from refmanager.models.reference_dto import ReferenceDto

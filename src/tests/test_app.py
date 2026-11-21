@@ -1,5 +1,7 @@
 import unittest
+
 from app_library import AppLibrary
+
 
 class TestApp(unittest.TestCase):
     def test_new_reference(self):

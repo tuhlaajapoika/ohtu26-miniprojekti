@@ -2,8 +2,10 @@ from refmanager.app import App
 from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
 from stub_io import StubIO
 
-#not fully implemented yet
+
 class AppLibrary:
+    """Test class for the main app,  not fully implemented yet."""
+
     def __init__(self):
         self._io = StubIO()
         self._repository = SqliteReferenceRepository(db_file="references.db")

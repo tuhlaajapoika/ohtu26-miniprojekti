@@ -1,4 +1,5 @@
 import sys
+
 from refmanager.models.reference_dto import ReferenceDto
 
 
@@ -23,6 +24,7 @@ class App:
         except RuntimeError as e:
             self.io.write(f"{e}")
             sys.exit(1)
+
     def create_reference(self):
         ref_type = self._select_reference_type()
         details = self._collect_reference_details(ref_type)
@@ -34,7 +36,7 @@ class App:
             "2": "Artikkeli",
             "3": "Verkkosivu",
             "4": "Konferenssijulkaisu",
-            "5": "Opinnäytetyö tai väitöskirja"
+            "5": "Opinnäytetyö tai väitöskirja",
         }
 
         while True:
@@ -45,7 +47,7 @@ class App:
                 "3 = Verkkosivu\n"
                 "4 = Konferenssijulkaisu\n"
                 "5 = Opinnäytetyö tai väitöskirja"
-                )
+            )
             choice = self.io.read("Valinta: ")
 
             if choice in ref_options:
@@ -72,19 +74,20 @@ class App:
         if ref_type == "Kirja":
             details["publisher"] = self.io.read("Kustantaja: ")
         elif ref_type == "Artikkeli":
-            details["volume"] = self.io.read(
-                  "Vuosikerta (vol., voit jättää tyhjäksi):")
-            details["issue"] = self.io.read(
-                  "Numero (no., voit jättää tyhjäksi): ")
+            details["volume"] = self.io.read("Vuosikerta (vol., voit jättää tyhjäksi):")
+            details["issue"] = self.io.read("Numero (no., voit jättää tyhjäksi): ")
             details["pages"] = self.io.read("Sivut (voit jättää tyhjäksi): ")
         elif ref_type == "Verkkosivu":
             details["url"] = self.io.read("URL: ")
             details["accessed_on"] = self.io.read("Viittauspäivä (esim. 21.11.2026): ")
         elif ref_type == "Konferenssijulkaisu":
-            details["proceedings"] = self.io.read("Julkaisun nimi tai julkaisusarja (voi jättää tyhjäksi): ")
+            details["proceedings"] = self.io.read(
+                "Julkaisun nimi tai julkaisusarja (voi jättää tyhjäksi): "
+            )
         elif ref_type == "Opinnäytetyö tai väitöskirja":
             details["institution"] = self.io.read("Oppilaitos: ")
             details["thesis_type"] = self.io.read(
-                 "Työn tyyppi (esimö AMK-opinnäytetyä, pro gradu, väitöskirja)")
+                "Työn tyyppi (esimö AMK-opinnäytetyä, pro gradu, väitöskirja)"
+            )
 
         return details

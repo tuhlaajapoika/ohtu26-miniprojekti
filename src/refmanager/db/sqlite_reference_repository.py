@@ -20,10 +20,10 @@ class SqliteReferenceRepository(ReferenceRepository):
         create_tables(self.conn)
 
         # remove init when create/delete program logic is implemented
-        #initialize_database(self.conn)
+        # initialize_database(self.conn)
 
         if not table_exists(self.conn):
-            raise RuntimeError("DB: 'references' table does not exist.")
+            raise RuntimeError("(database) 'references' table does not exist.")
 
     def get_db_connection(self):
         return self.conn
@@ -61,7 +61,7 @@ class SqliteReferenceRepository(ReferenceRepository):
                 accessed_on=row["accessed_on"],
                 proceedings=row["proceedings"],
                 institution=row["institution"],
-                thesis_type=row["thesis_type"]
+                thesis_type=row["thesis_type"],
             )
         return None
 
@@ -69,29 +69,46 @@ class SqliteReferenceRepository(ReferenceRepository):
         cursor = self.conn.execute(
             """
             INSERT OR REPLACE INTO "references" (
-            reference_id, type, title, author, year, publisher,
-            journal, volume, issue, pages, url, accessed_on, proceedings,
-            institution, thesis_type)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-    """,
-    (
-        ref.ref_id,
-        ref.ref_type,
-        ref.title,
-        ref.author,
-        ref.year,
-        ref.publisher,
-        ref.journal,
-        ref.volume,
-        ref.issue,
-        ref.pages,
-        ref.url,
-        ref.accessed_on,
-        ref.proceedings,
-        ref.institution,
-        ref.thesis_type,
-        ),
-    )
+                reference_id,
+                type,
+                title,
+                author,
+                year,
+                publisher,
+                journal,
+                volume,
+                issue,
+                pages,
+                url,
+                accessed_on,
+                proceedings,
+                institution,
+                thesis_type)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            """,
+            (
+                ref.ref_id,
+                ref.ref_type,
+                ref.title,
+                ref.author,
+                ref.year,
+                ref.publisher,
+                ref.journal,
+                ref.volume,
+                ref.issue,
+                ref.pages,
+                ref.url,
+                ref.accessed_on,
+                ref.proceedings,
+                ref.institution,
+                ref.thesis_type,
+            ),
+        )
 
         self.conn.commit()
-        return cursor.lastrowid
+        saved_id = cursor.lastrowid
+        if not saved_id:
+            raise RuntimeError(
+                f"(database) Reference was not saved: {ref.ref_id}, {ref.title}"
+            )
+        return saved_id

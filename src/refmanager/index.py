@@ -6,10 +6,11 @@ from refmanager.config import DATABASE_FILE
 from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
 from refmanager.io.console_io import ConsoleIO
 
-def main()->None:
+
+def main() -> None:
     """Function that prepares args, services and starts the main program."""
     parser = argparse.ArgumentParser(
-        prog="refmanager",# rename the program?
+        prog="refmanager",  # rename the program?
         description="Manage academic references with ease",
     )
 
