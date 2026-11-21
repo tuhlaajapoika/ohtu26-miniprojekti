@@ -4,7 +4,7 @@ Notes about linting, formatting etc.
 
 ## Coverage
 
-Run tests `pytest src/tests` and create branch coverage report:
+Run tests and create branch coverage report:
 
 ```shell
 coverage run --branch -m pytest; coverage html; coverage report -m
