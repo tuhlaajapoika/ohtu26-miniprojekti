@@ -39,7 +39,7 @@ jobs:
       - name: Run pytest
         run: uv run pytest
       - name: Create coverage branch measurements
-        run: uv run coverage run --branch
+        run: uv run coverage run --branch -m pytest
       - name: Create coverage report
         run: uv run coverage xml
       - name: Coverage report to Codecov
