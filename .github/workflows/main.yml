@@ -36,9 +36,7 @@ jobs:
           python-version: "3.14"
       - name: Install dependencies
         run: uv sync
-      - name: Run pytest
-        run: uv run pytest
-      - name: Create coverage branch measurements
+      - name: Run tests and coverage branch measurements
         run: uv run coverage run --branch -m pytest
       - name: Create coverage report
         run: uv run coverage xml
