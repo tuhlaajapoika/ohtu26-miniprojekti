@@ -34,5 +34,5 @@ class StubReferenceDatabase:
         ref.year,
         ref.publisher
     ))
-    self._conn.commit()
+        self._conn.commit()
             

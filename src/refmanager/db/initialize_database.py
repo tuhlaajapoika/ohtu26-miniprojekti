@@ -18,7 +18,16 @@ def create_tables(connection):
             title TEXT,
             author TEXT,
             year INTEGER,
-            publisher TEXT
+            publisher TEXT,
+            journal TEXT,
+            volume TEXT,
+            issue TEXT,
+            pages TEXT,
+            url TEXT,
+            accessed_on TEXT,
+            proceedings TEXT,
+            institution TEXT,
+            thesis_type TEXT
         )
         """
     )

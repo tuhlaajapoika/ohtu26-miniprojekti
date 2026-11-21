@@ -3,7 +3,6 @@ import sqlite3
 
 from refmanager.db.initialize_database import (
     create_tables,
-    initialize_database,
     table_exists,
 )
 from refmanager.models.reference_dto import ReferenceDto
@@ -21,7 +20,7 @@ class SqliteReferenceRepository(ReferenceRepository):
         create_tables(self.conn)
 
         # TODO: remove init when create/delete program logic is implemented
-        initialize_database(self.conn)
+        #initialize_database(self.conn)
 
         if not table_exists(self.conn):
             raise RuntimeError("DB: 'references' table does not exist.")
@@ -32,7 +31,9 @@ class SqliteReferenceRepository(ReferenceRepository):
     def find_by_id(self, ref_id: int) -> ReferenceDto | None:
         cursor = self.conn.execute(
             """
-            SELECT reference_id, type, title, author, year, publisher
+            SELECT reference_id, type, title, author, year,
+            publisher, journal, volume, issue, pages, url, accessed_on,
+            proceedings, institution, thesis_type
                 FROM "references"
                 WHERE reference_id = ?;
             """,
@@ -42,20 +43,48 @@ class SqliteReferenceRepository(ReferenceRepository):
         if row is not None:
             # Change row to ReferenceDto object
             return ReferenceDto(
-                ref_id=row[0],
-                ref_type=row[1],
-                title=row[2],
-                author=row[3],
-                year=row[4],
-                publisher=row[5],
+                ref_id=row["reference_id"],
+                ref_type=row["type"],
+                title=row["title"],
+                author=row["author"],
+                year=row["year"],
+                publisher=row["publisher"],
+                journal=row["journal"],
+                volume=row["volume"],
+                issue=row["issue"],
+                pages=row["pages"],
+                url=row["url"],
+                accessed_on=row["accessed_on"],
+                proceedings=row["proceedings"],
+                institution=row["institution"],
+                thesis_type=row["thesis_type"]
             )
         return None
 
     def save(self, ref: ReferenceDto) -> int:
-        cursor = self.conn.execute("""
-        INSERT INTO "references" (type, title, author, year, publisher)
-        VALUES (?, ?, ?, ?, ?);
-    """, (ref.ref_type, ref.title, ref.author, ref.year, ref.publisher))
+        cursor = self.conn.execute(
+            """
+            INSERT OR REPLACE INTO "references" (reference_id, type, title, author, year, publisher, journal, volume, issue, pages, url, accessed_on, proceedings, institution, thesis_type)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    """, 
+    (
+        ref.ref_id,
+        ref.ref_type,
+        ref.title,
+        ref.author,
+        ref.year,
+        ref.publisher,
+        ref.journal,
+        ref.volume,
+        ref.issue,
+        ref.pages,
+        ref.url,
+        ref.accessed_on,
+        ref.proceedings,
+        ref.institution,
+        ref.thesis_type,
+        ),
+    )
         
         self.conn.commit()
         return cursor.lastrowid

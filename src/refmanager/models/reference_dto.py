@@ -11,13 +11,13 @@ class ReferenceDto:
     author: str
     year: int
     publisher: str
-    journal: str
-    volume: str
-    issue: str
-    pages: str
-    url: str
-    accessed_on: str
-    proceedings: str
-    institution: str
-    thesis_type: str
+    journal: str = ""
+    volume: str = ""
+    issue: str = ""
+    pages: str = ""
+    url: str = ""
+    accessed_on: str = ""
+    proceedings: str = ""
+    institution: str = ""
+    thesis_type: str = ""
     

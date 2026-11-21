@@ -1,13 +1,13 @@
 from refmanager.app import App
-from stub_db import StubReferenceDatabase
 from stub_io import StubIO
+from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
 
 
 # TODO: not fully implemented yet
 class AppLibrary:
     def __init__(self):
         self._io = StubIO()
-        self._repository = StubReferenceDatabase(db_file="references_stub.db")
+        self._repository = SqliteReferenceRepository(db_file="references.db")
         # self._reference_service = ReferenceService
         self._app = App(ref_repository=self._repository, io=self._io)
 
