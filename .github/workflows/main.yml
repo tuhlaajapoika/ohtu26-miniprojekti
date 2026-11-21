@@ -41,6 +41,6 @@ jobs:
       - name: Coverage report
         run: uv run coverage xml
       - name: Coverage report to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
