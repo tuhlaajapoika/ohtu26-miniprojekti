@@ -11,4 +11,4 @@ class TestApp(unittest.TestCase):
         app.input("Prentice hall")
 
         app.run_application("new")
-        self.assertTrue(app._io.outputs[-1].startswith("Viite lisätty (ID: "))
+        self.assertTrue(app.outputs()[-1].startswith("Viite lisätty (ID: "))

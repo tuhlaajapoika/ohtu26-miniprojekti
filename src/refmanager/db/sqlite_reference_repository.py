@@ -19,7 +19,7 @@ class SqliteReferenceRepository(ReferenceRepository):
         self.conn.row_factory = sqlite3.Row
         create_tables(self.conn)
 
-        # TODO: remove init when create/delete program logic is implemented
+        # remove init when create/delete program logic is implemented
         #initialize_database(self.conn)
 
         if not table_exists(self.conn):
@@ -27,6 +27,10 @@ class SqliteReferenceRepository(ReferenceRepository):
 
     def get_db_connection(self):
         return self.conn
+
+    def close(self):
+        """Close the database connection."""
+        self.conn.close()
 
     def find_by_id(self, ref_id: int) -> ReferenceDto | None:
         cursor = self.conn.execute(
@@ -64,9 +68,12 @@ class SqliteReferenceRepository(ReferenceRepository):
     def save(self, ref: ReferenceDto) -> int:
         cursor = self.conn.execute(
             """
-            INSERT OR REPLACE INTO "references" (reference_id, type, title, author, year, publisher, journal, volume, issue, pages, url, accessed_on, proceedings, institution, thesis_type)
+            INSERT OR REPLACE INTO "references" (
+            reference_id, type, title, author, year, publisher,
+            journal, volume, issue, pages, url, accessed_on, proceedings,
+            institution, thesis_type)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-    """, 
+    """,
     (
         ref.ref_id,
         ref.ref_type,
@@ -85,6 +92,6 @@ class SqliteReferenceRepository(ReferenceRepository):
         ref.thesis_type,
         ),
     )
-        
+
         self.conn.commit()
         return cursor.lastrowid

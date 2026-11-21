@@ -3,11 +3,9 @@ import os
 import tempfile
 
 from refmanager.app import App
+from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
 from stub_db import StubReferenceDatabase
 from stub_io import StubIO
-from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
-
-
 
 
 class TestApp(unittest.TestCase):
@@ -66,7 +64,7 @@ class TestApp(unittest.TestCase):
             "38-40"
         ]
         self._app.run(command="new")
-        
+
         self.assertIn(
             "Virheellinen valinta. Valitse 1, 2, 3, 4 tai 5. ",
             self._io.outputs
@@ -77,7 +75,7 @@ class TestApp(unittest.TestCase):
             db_file = os.path.join(temp_dir, "reference_test.db")
             repository = SqliteReferenceRepository(db_file)
             self.addCleanup(repository.get_db_connection().close)
-            
+
             io = StubIO()
 
             io.inputs = ["1", "Testikirja", "Testitekijä", "2024", "Testikustantaja"]

@@ -35,3 +35,4 @@ indent-width = 4
 [tool.ruff.format]
 # Like Black, respect magic trailing commas, default.
 skip-magic-trailing-comma = false
+

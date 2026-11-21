@@ -35,4 +35,3 @@ class StubReferenceDatabase:
         ref.publisher
     ))
         self._conn.commit()
-            

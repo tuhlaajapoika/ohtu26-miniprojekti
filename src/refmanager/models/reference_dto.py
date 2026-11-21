@@ -20,4 +20,3 @@ class ReferenceDto:
     proceedings: str = ""
     institution: str = ""
     thesis_type: str = ""
-    

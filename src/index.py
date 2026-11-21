@@ -7,13 +7,13 @@ def main() -> None:
     console_io = ConsoleIO()
     repository = SqliteReferenceRepository(db_file=DATABASE_FILE)
     app = App(ref_repository=repository, io=console_io)
-    
+
     while True:
         query = input("1 = Lisää viite, 0 = Lopeta: ")
-        
+
         if query == "0":
             break
-        
+
         if query == "1":
             app.run(command="new")
         else:

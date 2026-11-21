@@ -1,4 +1,4 @@
-# TODO: refactor for project's needs
+# refactor for project's needs
 
 
 class ConsoleIO:

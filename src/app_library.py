@@ -1,9 +1,8 @@
 from refmanager.app import App
-from stub_io import StubIO
 from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
+from stub_io import StubIO
 
-
-# TODO: not fully implemented yet
+#not fully implemented yet
 class AppLibrary:
     def __init__(self):
         self._io = StubIO()
@@ -25,5 +24,8 @@ class AppLibrary:
     def run_application(self, command):
         self._app.run(command)
 
+    def outputs(self):
+        return self._io.outputs
+
     # def create_reference(self, title, author, year):
-    #    self._reference_service.create(title, author, year)
+    #  self._reference_service.create(title, author, year)
