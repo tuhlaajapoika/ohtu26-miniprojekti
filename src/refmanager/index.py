@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 
 from refmanager.app import App
@@ -48,7 +49,7 @@ def main() -> None:
     try:
         app.run(command=args.command)
     except KeyboardInterrupt:
-        print("\nUser interrupt captured.", console_io)
+        print(f"{os.linesep}User interrupt captured.", console_io)
         conn = sqlite_repository.get_db_connection()
         conn.close()
         sys.exit(130)
