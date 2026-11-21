@@ -37,7 +37,7 @@ class App:
 
                         self.io.write("Virheellinen valinta. Valitse 1, 2, 3, 4 tai 5. ")
                         
-                    title = self.io.read("Otsikko: ")
+                    title = self.io.read("Nimi: ")
                     author = self.io.read("Tekijä(t): ")
                     year = int(self.io.read("Vuosi: "))
 
@@ -46,14 +46,27 @@ class App:
                     volume = ""
                     issue = ""
                     pages = ""
+                    url = ""
+                    accessed_on = ""
+                    proceedings = ""
+                    institution = ""
+                    thesis_type = ""
 
                     if ref_type == "Kirja":
-                        publisher = self.io.read("Kustantaja")
+                        publisher = self.io.read("Kustantaja: ")
                     elif ref_type == "Artikkeli":
-                        journal = self.io.read("Lehden nimi: ")
                         volume = self.io.read("Vuosikerta (vol., voit jättää tyhjäksi): ")
                         issue = self.io.read("Numero (no., voit jättää tyhjäksi): ")
                         pages = self.io.read("Sivut (voit jättää tyhjäksi): ")
+                    elif ref_type == "Verkkosivu":
+                        url = self.io.read("URL: ")
+                        accessed_on = self.io.read("Viittauspäivä (esim. 21.11.2026): ")
+                    elif ref_type == "Konferenssijulkaisu":
+                        proceedings = self.io.read("Julkaisun nimi tai julkaisusarja (voi jättää tyhjäksi): ")
+                    elif ref_type == "Opinnäytetyö tai väitöskirja":
+                        institution = self.io.read("Oppilaitos: ")
+                        thesis_type = self.io.read("Työn tyyppi (esimö AMK-opinnäytetyä, pro gradu, väitöskirja)")
+                        
                             
                     reference = ReferenceDto(
                         ref_id=None,
@@ -65,30 +78,22 @@ class App:
                         journal=journal,
                         volume=volume,
                         issue=issue,
-                        pages=pages
+                        pages=pages,
+                        url=url,
+                        accessed_on=accessed_on,
+                        proceedings=proceedings,
+                        institution=institution,
+                        thesis_type=thesis_type
                         )
                             
                     ref_id = self.repository.save(reference)
                     self.io.write(f"Viite lisätty (ID: {ref_id})")
 
                     # TODO: Viitteen muotoilu lisätään tähän
-                    # Kaikilla lähdetyypeillä:
-                    # -ref_type:lähdetyyppi
-                    # -title: otsikko
-                    # -author: tekijä(t)
-                    # - year: vuosi
+                   
 
-                    #Kirjalla:
-                    # -publisher: kustantaja
 
-                    #Artikkelilla
-                    # -journal: lehden nimi
-                    # -volume: vuosikerta (vol.)
-                    # -issue: numero (no.)
-                    # -pages: sivut
-
-                    #Verkkosivu, konferenssijulkaisu ja opinnäytetyä:
-                    # Tällä hetkellä vain yhteiset kentät käytössä
+                    
                             
                 case "list":
                     self.io.write("Not implemented: list")

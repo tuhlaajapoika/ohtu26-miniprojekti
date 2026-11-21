@@ -15,3 +15,9 @@ class ReferenceDto:
     volume: str
     issue: str
     pages: str
+    url: str
+    accessed_on: str
+    proceedings: str
+    institution: str
+    thesis_type: str
+    
