@@ -9,7 +9,11 @@ from refmanager.db.initialize_database import initialize_database
 
 
 class StubReferenceDatabase:
-    """A stub implementation of a reference database for testing purposes."""
+    """
+    A stub implementation of a reference database for testing purposes.
+
+    Uses temporary directory for the database file.
+    """
 
     def __init__(self, _db_file=DATABASE_FILE_TESTS):
         self._temp_dir = tempfile.mkdtemp()
