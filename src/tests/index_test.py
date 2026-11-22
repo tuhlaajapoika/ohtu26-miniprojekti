@@ -56,9 +56,7 @@ class TestIndex(unittest.TestCase):
 
     def test_main_closes_database_and_exits_on_keyboard_interrupt(self):
         console_io = Mock()
-        connection = Mock()
         repository = Mock()
-        repository.get_db_connection.return_value = connection
         app = Mock()
         app.run.side_effect = KeyboardInterrupt
 
@@ -78,6 +76,5 @@ class TestIndex(unittest.TestCase):
         print_mock.assert_called_once_with(
             f"{os.linesep}User interrupt captured.", console_io
         )
-        repository.get_db_connection.assert_called_once_with()
-        connection.close.assert_called_once_with()
+        repository.close.assert_called_once_with()
         exit_mock.assert_called_once_with(130)

@@ -1,5 +1,6 @@
 import argparse
 import os
+import sqlite3
 import sys
 
 from refmanager.app import App
@@ -53,18 +54,19 @@ def main() -> None:
 
     # Prepare and run
     console_io = ConsoleIO()
-    # try:
-    sqlite_repository = SqliteReferenceRepository(db_file=DATABASE_FILE)
-    app = App(ref_repository=sqlite_repository, io=console_io)
     try:
-        app.run(command=args.command)
-    except KeyboardInterrupt:
-        print(f"{os.linesep}User interrupt captured.", console_io)
-        conn = sqlite_repository.get_db_connection()
-        conn.close()
-        sys.exit(130)
-    # except Exception as e:
-    #    print(f"{e}", console_io)
+        sqlite_repository = SqliteReferenceRepository(db_file=DATABASE_FILE)
+        app = App(ref_repository=sqlite_repository, io=console_io)
+        try:
+            app.run(command=args.command)
+        except KeyboardInterrupt:
+            print(f"{os.linesep}User interrupt captured.", console_io)
+            sqlite_repository.close()
+            sys.exit(130)
+    except RuntimeError as e:
+        print(f"ERROR: {e}")
+    except sqlite3.OperationalError as e:
+        print(f"ERROR: {e}")
 
 
 if __name__ == "__main__":

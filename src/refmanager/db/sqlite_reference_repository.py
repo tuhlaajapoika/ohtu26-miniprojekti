@@ -25,13 +25,14 @@ class SqliteReferenceRepository(ReferenceRepository):
         # initialize_database(self.conn)
 
         if not table_exists(self.conn):
-            raise RuntimeError("(database) 'references' table does not exist.")
+            raise sqlite3.OperationalError("'references' table does not exist.")
 
     def get_db_connection(self):
         return self.conn
 
     def close(self):
         """Close the database connection."""
+        self.conn.commit()
         self.conn.close()
 
     def find_by_id(self, ref_id: uuid.UUID) -> ReferenceDto | None:
@@ -132,11 +133,24 @@ class SqliteReferenceRepository(ReferenceRepository):
     def find_all(self) -> list[ReferenceDto]:
         cursor = self.conn.execute(
             """
-                    SELECT reference_id, type, title, author, year,
-                    publisher, journal, volume, issue, pages, url, accessed_on,
-                    proceedings, institution, thesis_type
-                        FROM "references"
-                    """,
+            SELECT
+                reference_id,
+                type,
+                title,
+                author,
+                year,
+                publisher,
+                journal,
+                volume,
+                issue,
+                pages,
+                url,
+                accessed_on,
+                proceedings,
+                institution,
+                thesis_type
+            FROM "references";
+            """,
         )
         rows = cursor.fetchall()
         return [
