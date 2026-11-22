@@ -17,20 +17,20 @@ Yleistä miniprojektista
 
 ## Development
 
-Kloonaa repositorio ja suorita `uv sync`. Ohjelma voidaan suorittaa komentoriviltä:
+Kloonaa repositorio ja suorita `uv sync`. Ohjelma voidaan suorittaa komentoriviltä ja näyttää oletuksena käytettävät komennot:
 
 ```shell
-uv run refmanager --help
+uv run refmanager
 # tai
-uv run python3 src/refmanager/index.py --help
+uv run python3 src/refmanager/index.py
 ```
 
 tai venv-ympäristössä:
 
 ```shell
-refmanager --help
+refmanager
 # tai
-python3 src/refmanager/index.py --help
+python3 src/refmanager/index.py
 ```
 
 [Muita muistiinpanoja](/docs/development-notes.md)
