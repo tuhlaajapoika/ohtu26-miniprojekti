@@ -2,6 +2,7 @@ import os
 import shutil
 import tempfile
 import unittest
+import uuid
 
 from refmanager.config import DATABASE_FILE_TESTS
 from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
@@ -19,11 +20,12 @@ class TestSqliteReferenceRepository(unittest.TestCase):
         self.addCleanup(self._repository.close)
 
     def test_find_by_id_returns_none_when_reference_does_not_exist(self):
-        self.assertIsNone(self._repository.find_by_id(22))
+        self.assertIsNone(self._repository.find_by_id(uuid.uuid7()))
 
     def test_save_and_find_by_id(self):
+        ref_id = uuid.uuid7()
         reference = ReferenceDto(
-            ref_id=22,
+            ref_id=ref_id,
             ref_type="article",
             title="Testing SQLite",
             author="Matti Meikäläinen",
@@ -31,21 +33,33 @@ class TestSqliteReferenceRepository(unittest.TestCase):
             publisher="",
         )
         self._repository.save(reference)
-        self.assertEqual(self._repository.find_by_id(reference.ref_id), reference)
+        self.assertEqual(self._repository.find_by_id(ref_id), reference)
 
     def test_save_replaces_existing_reference_with_same_id(self):
-        original = ReferenceDto(22, "article", "Original", "Keijo", 2020, "")
-        updated = ReferenceDto(22, "book", "Updated", "Kaija", 2025, "FreshPublisher")
+        ref_id = uuid.uuid7()
+        original = ReferenceDto(ref_id, "article", "Original", "Keijo", 2020, "")
+        updated = ReferenceDto(
+            ref_id, "book", "Updated", "Kaija", 2025, "FreshPublisher"
+        )
         self._repository.save(original)
         self._repository.save(updated)
-        self.assertEqual(self._repository.find_by_id(updated.ref_id), updated)
+        self.assertEqual(self._repository.find_by_id(ref_id), updated)
 
     def test_find_all_returns_empty_list_when_no_references(self):
         self.assertEqual(self._repository.find_all(), [])
 
     def test_find_all_returns_all_saved_references(self):
-        first = ReferenceDto(1, "book", "Clean Code", "Robert C. Martin", 2008, "Prentice Hall")
-        second = ReferenceDto(2, "article", "Testing SQLite", "Matti Meikäläinen", 2026, "")
+        first = ReferenceDto(
+            uuid.uuid7(),
+            "book",
+            "Clean Code",
+            "Robert C. Martin",
+            2008,
+            "Prentice Hall",
+        )
+        second = ReferenceDto(
+            uuid.uuid7(), "article", "Testing SQLite", "Matti Meikäläinen", 2026, ""
+        )
         self._repository.save(first)
         self._repository.save(second)
         self.assertCountEqual(self._repository.find_all(), [first, second])

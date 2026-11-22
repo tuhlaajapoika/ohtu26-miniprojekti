@@ -1,4 +1,5 @@
 import sys
+import uuid
 from textwrap import dedent
 
 from refmanager.models.reference_dto import ReferenceDto
@@ -38,7 +39,7 @@ class App:
     def create_reference(self):
         ref_type = self._select_reference_type()
         details = self._collect_reference_details(ref_type)
-        return ReferenceDto(ref_id=None, ref_type=ref_type, **details)
+        return ReferenceDto(ref_id=uuid.uuid7(), ref_type=ref_type, **details)
 
     def _select_reference_type(self):
         ref_options = {

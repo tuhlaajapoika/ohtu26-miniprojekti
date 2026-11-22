@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import uuid
 
 from refmanager.config import DATABASE_FILE_TESTS
 from refmanager.db.initialize_database import initialize_database
@@ -23,12 +24,21 @@ class StubReferenceDatabase:
         os.remove(self._test_db_file)
 
     def save(self, ref):
+        if ref.ref_id is None:
+            ref.ref_id = uuid.uuid7()
         self._conn.execute(
             """
             INSERT OR REPLACE INTO "references"
                 (reference_id, type, title, author, year, publisher)
             VALUES (?, ?, ?, ?, ?, ?);
             """,
-            (ref.ref_id, ref.ref_type, ref.title, ref.author, ref.year, ref.publisher),
+            (
+                str(ref.ref_id),
+                ref.ref_type,
+                ref.title,
+                ref.author,
+                ref.year,
+                ref.publisher,
+            ),
         )
         self._conn.commit()

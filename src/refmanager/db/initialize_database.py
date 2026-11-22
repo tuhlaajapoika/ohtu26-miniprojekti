@@ -13,7 +13,7 @@ def create_tables(connection):
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS "references" (
-            reference_id INTEGER PRIMARY KEY,
+            reference_id TEXT PRIMARY KEY,
             type TEXT,
             title TEXT,
             author TEXT,

@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import uuid
 
 from refmanager.db.initialize_database import initialize_database, table_exists
 from refmanager.models.reference_dto import ReferenceDto
@@ -30,22 +31,34 @@ class SqliteReferenceRepository(ReferenceRepository):
         """Close the database connection."""
         self.conn.close()
 
-    def find_by_id(self, ref_id: int) -> ReferenceDto | None:
+    def find_by_id(self, ref_id: uuid.UUID) -> ReferenceDto | None:
         cursor = self.conn.execute(
             """
-            SELECT reference_id, type, title, author, year,
-            publisher, journal, volume, issue, pages, url, accessed_on,
-            proceedings, institution, thesis_type
-                FROM "references"
-                WHERE reference_id = ?;
+            SELECT
+                reference_id,
+                type,
+                title,
+                author,
+                year,
+                publisher,
+                journal,
+                volume,
+                issue,
+                pages,
+                url,
+                accessed_on,
+                proceedings,
+                institution,
+                thesis_type
+            FROM "references" WHERE reference_id = ?;
             """,
-            (ref_id,),
+            (str(ref_id),),
         )
         row = cursor.fetchone()
         if row is not None:
             # Change row to ReferenceDto object
             return ReferenceDto(
-                ref_id=row["reference_id"],
+                ref_id=uuid.UUID(row["reference_id"]),
                 ref_type=row["type"],
                 title=row["title"],
                 author=row["author"],
@@ -63,7 +76,10 @@ class SqliteReferenceRepository(ReferenceRepository):
             )
         return None
 
-    def save(self, ref: ReferenceDto) -> int:
+    def save(self, ref: ReferenceDto) -> uuid.UUID:
+        if ref.ref_id is None:
+            ref.ref_id = uuid.uuid7()
+
         cursor = self.conn.execute(
             """
             INSERT OR REPLACE INTO "references" (
@@ -85,7 +101,7 @@ class SqliteReferenceRepository(ReferenceRepository):
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
             """,
             (
-                ref.ref_id,
+                str(ref.ref_id),
                 ref.ref_type,
                 ref.title,
                 ref.author,
@@ -104,16 +120,15 @@ class SqliteReferenceRepository(ReferenceRepository):
         )
 
         self.conn.commit()
-        saved_id = cursor.lastrowid
-        if not saved_id:
+        if cursor.rowcount != 1:
             raise RuntimeError(
                 f"(database) Reference was not saved: {ref.ref_id}, {ref.title}"
             )
-        return saved_id
+        return ref.ref_id
 
     def find_all(self) -> list[ReferenceDto]:
         cursor = self.conn.execute(
-                    """
+            """
                     SELECT reference_id, type, title, author, year,
                     publisher, journal, volume, issue, pages, url, accessed_on,
                     proceedings, institution, thesis_type
@@ -123,7 +138,7 @@ class SqliteReferenceRepository(ReferenceRepository):
         rows = cursor.fetchall()
         return [
             ReferenceDto(
-                ref_id=row["reference_id"],
+                ref_id=uuid.UUID(row["reference_id"]),
                 ref_type=row["type"],
                 title=row["title"],
                 author=row["author"],

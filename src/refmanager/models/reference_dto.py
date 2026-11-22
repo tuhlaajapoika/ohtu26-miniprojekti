@@ -1,3 +1,4 @@
+import uuid
 from dataclasses import dataclass
 
 
@@ -5,7 +6,7 @@ from dataclasses import dataclass
 class ReferenceDto:  # pylint: disable=too-many-instance-attributes
     """Data transfer object (DTO) for Reference"""
 
-    ref_id: int | None
+    ref_id: uuid.UUID | None
     ref_type: str
     title: str
     author: str
