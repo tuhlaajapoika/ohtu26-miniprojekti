@@ -1,3 +1,24 @@
+# List of columns the SQL statements use below.
+_REFERENCE_COLUMNS = (
+    "reference_id",
+    "type",
+    "title",
+    "author",
+    "year",
+    "publisher",
+    "journal",
+    "volume",
+    "issue",
+    "pages",
+    "url",
+    "accessed_on",
+    "proceedings",
+    "institution",
+    "thesis_type",
+)
+_REFERENCE_COLUMN_LIST = ",\n    ".join(_REFERENCE_COLUMNS)
+
+
 # Create references table to the database
 CREATE_REFERENCES_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS "references" (
@@ -20,67 +41,26 @@ CREATE TABLE IF NOT EXISTS "references" (
 """
 
 # Get all references from the database
-FIND_ALL_REFERENCES_SQL = """
+FIND_ALL_REFERENCES_SQL = f"""
 SELECT
-    reference_id,
-    type,
-    title,
-    author,
-    year,
-    publisher,
-    journal,
-    volume,
-    issue,
-    pages,
-    url,
-    accessed_on,
-    proceedings,
-    institution,
-    thesis_type
+    {_REFERENCE_COLUMN_LIST}
 FROM "references";
 """
 
 # Find by ID
-FIND_REFERENCES_BY_ID_SQL = """
+FIND_REFERENCES_BY_ID_SQL = f"""
 SELECT
-    reference_id,
-    type,
-    title,
-    author,
-    year,
-    publisher,
-    journal,
-    volume,
-    issue,
-    pages,
-    url,
-    accessed_on,
-    proceedings,
-    institution,
-    thesis_type
+    {_REFERENCE_COLUMN_LIST}
 FROM "references" WHERE reference_id = ?;
 """
 
 # Save new reference to the database.
 # Using named style instead of qmark style.
 # See: https://docs.python.org/3/library/sqlite3.html#how-to-use-placeholders-to-bind-values-in-sql-queries # pylint: disable=line-too-long
-INSERT_NEW_REFERENCE_SQL = """
+INSERT_NEW_REFERENCE_SQL = f"""
 INSERT OR REPLACE INTO "references" (
-    reference_id,
-    type,
-    title,
-    author,
-    year,
-    publisher,
-    journal,
-    volume,
-    issue,
-    pages,
-    url,
-    accessed_on,
-    proceedings,
-    institution,
-    thesis_type)
+    {_REFERENCE_COLUMN_LIST}
+)
 VALUES (
     :reference_id,
     :type,
