@@ -3,6 +3,7 @@ import uuid
 from textwrap import dedent
 
 from refmanager.models.reference_dto import ReferenceDto
+from refmanager.services.reference_formatter import format_reference
 from refmanager.services.reference_listing import list_references
 
 
@@ -25,7 +26,9 @@ class App:
                     ref_id = self.repository.save(reference)
                     self.io.write(f"Viite lisätty (ID: {ref_id})")
                 case "list":
-                    list_references(self.repository, self.io)
+                    list_references(
+                        self.repository, self.io, formatter=format_reference
+                    )
                 case "export":
                     self.io.write("Not implemented: export")
                 case "quit":

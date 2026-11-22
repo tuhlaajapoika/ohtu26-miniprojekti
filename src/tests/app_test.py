@@ -77,14 +77,21 @@ class TestApp(unittest.TestCase):
 
     def test_running_command_list_writes_references_from_repository(self):
         reference = SimpleNamespace(
-            ref_id=1, author="Martin", year=2008, title="Clean Code"
+            ref_id=1,
+            ref_type="Kirja",
+            author="Martin",
+            year=2008,
+            title="Clean Code",
+            publisher="Prentice Hall",
         )
         repository = SimpleNamespace(find_all=lambda: [reference])
         app = App(ref_repository=repository, io=self._io)
 
         app.run(command="list")
 
-        self.assertEqual(self._io.outputs, ["[1] Martin (2008): Clean Code"])
+        self.assertEqual(
+            self._io.outputs, ["Kirja: Martin (2008). Clean Code. Prentice Hall."]
+        )
 
     def test_running_command_export_returns_not_implemented(self):
         self._app.run(command="export")
