@@ -76,7 +76,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("Viite lisätty", self._io.outputs[-1])
 
     def test_running_command_list_writes_references_from_repository(self):
-        reference = SimpleNamespace(
+        _reference = SimpleNamespace(
             ref_id=1,
             ref_type="Kirja",
             author="Martin",
@@ -84,10 +84,10 @@ class TestApp(unittest.TestCase):
             title="Clean Code",
             publisher="Prentice Hall",
         )
-        repository = SimpleNamespace(find_all=lambda: [reference])
-        app = App(ref_repository=repository, io=self._io)
+        _repository = SimpleNamespace(find_all=lambda: [_reference])
+        _app = App(ref_repository=_repository, io=self._io)
 
-        app.run(command="list")
+        _app.run(command="list")
 
         self.assertEqual(
             self._io.outputs, ["Kirja: Martin (2008). Clean Code. Prentice Hall."]
@@ -106,21 +106,24 @@ class TestApp(unittest.TestCase):
         )
 
     def test_running_command_new_saves_book_to_sqlite(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            db_file = os.path.join(temp_dir, DATABASE_FILE_TESTS)
-            repository = SqliteReferenceRepository(db_file)
-            self.addCleanup(repository.get_db_connection().close)
+        with tempfile.TemporaryDirectory() as _temp_dir:
+            _db_file = os.path.join(_temp_dir, DATABASE_FILE_TESTS)
+            _repository = SqliteReferenceRepository(_db_file)
+            self.addCleanup(_repository.get_db_connection().close)
+            self._io.inputs = [
+                "1",
+                "Testikirja",
+                "Testitekijä",
+                "2024",
+                "Testikustantaja",
+            ]
+            _app = App(ref_repository=_repository, io=self._io)
+            _app.run(command="new")
 
-            io = StubIO()
-
-            io.inputs = ["1", "Testikirja", "Testitekijä", "2024", "Testikustantaja"]
-            app = App(ref_repository=repository, io=io)
-            app.run(command="new")
-
-            row = (
-                repository.get_db_connection()
+            _row = (
+                _repository.get_db_connection()
                 .execute('SELECT title FROM "references"')
                 .fetchone()
             )
 
-            self.assertEqual(row["title"], "Testikirja")
+            self.assertEqual(_row["title"], "Testikirja")

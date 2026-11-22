@@ -15,8 +15,8 @@ class TestSqliteReferenceRepository(unittest.TestCase):
     def setUp(self):
         self._temp_dir = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self._temp_dir)
-        db_file = os.path.join(self._temp_dir, DATABASE_FILE_TESTS)
-        self._repository = SqliteReferenceRepository(db_file)
+        _db_file = os.path.join(self._temp_dir, DATABASE_FILE_TESTS)
+        self._repository = SqliteReferenceRepository(_db_file)
         self.addCleanup(self._repository.close)
 
     def test_find_by_id_returns_none_when_reference_does_not_exist(self):

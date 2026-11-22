@@ -7,9 +7,9 @@ from stub_io import StubIO
 class AppLibrary:
     """Test class for the main app,  not fully implemented yet."""
 
-    def __init__(self):
+    def __init__(self, _db_file=DATABASE_FILE_TESTS):
         self._io = StubIO()
-        self._repository = SqliteReferenceRepository(db_file=DATABASE_FILE_TESTS)
+        self._repository = SqliteReferenceRepository(_db_file)
         # self._reference_service = ReferenceService
         self._app = App(ref_repository=self._repository, io=self._io)
 

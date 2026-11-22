@@ -1,5 +1,7 @@
 import os
+import shutil
 import sqlite3
+import tempfile
 import uuid
 
 from refmanager.config import DATABASE_FILE_TESTS
@@ -9,9 +11,9 @@ from refmanager.db.initialize_database import initialize_database
 class StubReferenceDatabase:
     """A stub implementation of a reference database for testing purposes."""
 
-    def __init__(self, db_file=DATABASE_FILE_TESTS):
-        _dirname = os.path.dirname(__file__)
-        self._test_db_file = os.path.join(_dirname, "..", db_file)
+    def __init__(self, _db_file=DATABASE_FILE_TESTS):
+        self._temp_dir = tempfile.mkdtemp()
+        self._test_db_file = os.path.join(self._temp_dir, DATABASE_FILE_TESTS)
         self._conn = sqlite3.connect(self._test_db_file)
         self._conn.row_factory = sqlite3.Row
         initialize_database(self._conn)
@@ -21,7 +23,7 @@ class StubReferenceDatabase:
 
     def cleanup(self):
         self._conn.close()
-        os.remove(self._test_db_file)
+        shutil.rmtree(self._temp_dir)
 
     def save(self, ref):
         if ref.ref_id is None:
