@@ -1,6 +1,8 @@
 import os
 import sys
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 from unittest.mock import Mock, patch
 
 from refmanager import index
@@ -32,14 +34,16 @@ class TestIndex(unittest.TestCase):
                 )
                 app.run.assert_called_once_with(command=command)
 
-    def test_main_requires_a_command(self):
-        with (
-            patch.object(sys, "argv", ["refmanager"]),
-            self.assertRaises(SystemExit) as context,
-        ):
+    def test_main_displays_available_commands_when_no_command_is_passed(self):
+        output = StringIO()
+        with patch.object(sys, "argv", ["refmanager"]), redirect_stdout(output):
             index.main()
 
-        self.assertEqual(context.exception.code, 2)  # exit status 2
+        self.assertIn("positional arguments:", output.getvalue())
+        self.assertIn("new       Create a new reference", output.getvalue())
+        self.assertIn("list      List all references", output.getvalue())
+        self.assertIn("export    Export references to BibTex format", output.getvalue())
+        self.assertIn("quit      Quit the program", output.getvalue())
 
     def test_main_rejects_unknown_command(self):
         with (

@@ -1,9 +1,12 @@
 import sys
+from textwrap import dedent
 
 from refmanager.models.reference_dto import ReferenceDto
 
+
 class UserQuitException(Exception):
     """An exception raised when the user chooses to quit the application."""
+
 
 class App:
     """A class that represents the main application for managing references."""
@@ -24,7 +27,7 @@ class App:
                 case "export":
                     self.io.write("Not implemented: export")
                 case "quit":
-                    raise UserQuitException()  
+                    raise UserQuitException()
         except UserQuitException:
             self.io.write("Quitting the program.")
             sys.exit(0)
@@ -47,13 +50,18 @@ class App:
         }
 
         while True:
+            # detent: prevent indentation
             self.io.write(
-                "Valitse lähdetyyppi:\n"
-                "1 = Kirja\n"
-                "2 = Artikkeli\n"
-                "3 = Verkkosivu\n"
-                "4 = Konferenssijulkaisu\n"
-                "5 = Opinnäytetyö tai väitöskirja"
+                dedent(
+                    """\
+                Valitse lähdetyyppi:
+                1 = Kirja
+                2 = Artikkeli
+                3 = Verkkosivu
+                4 = Konferenssijulkaisu
+                5 = Opinnäytetyö tai väitöskirja
+                """
+                )
             )
             choice = self.io.read("Valinta: ")
 

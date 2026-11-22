@@ -9,44 +9,47 @@ from refmanager.io.console_io import ConsoleIO
 
 
 def main() -> None:
-    
     """Function that prepares args, services and starts the main program."""
     parser = argparse.ArgumentParser(
         prog="refmanager",  # rename the program?
         description="Manage academic references with ease",
     )
 
-    # Set as mandatory argument.
     cmdparser = parser.add_subparsers(
-        dest="command",
-        required=True,
-        metavar="COMMAND ('new' → create a new reference, 'list' → list all references, 'export' → export references to BibTex format, 'quit' → quit the program)",
+        prog="refmanager", dest="command", metavar="COMMAND"
     )
 
     # With add_parser we can later define positional args for the commands.
     cmdparser.add_parser(
         "new",
-        help="Create a reference interactively",
-        # description=("")
+        help="Create a new reference",
+        description=(
+            "Create new references interactively by filling required and optional fields"
+        ),
     )
     cmdparser.add_parser(
         "list",
         help="List all references",
-        # description=("")
+        description=("List all saved references in human readable format"),
     )
     cmdparser.add_parser(
         "export",
         help="Export references to BibTex format",
-        # description=("")
+        description=("Export references to a .bib file in BibTex format"),
     )
 
     cmdparser.add_parser(
-            "quit",
-            help="Quit the program",
-            # description=("")
-        )
+        "quit",
+        help="Quit the program",
+        # description=("")
+    )
 
     args = parser.parse_args()
+
+    # When user does not give a command, print help
+    if args.command is None:
+        parser.print_help()
+        return
 
     # Prepare and run
     console_io = ConsoleIO()
