@@ -22,6 +22,24 @@ class TestSqliteReferenceRepository(unittest.TestCase):
     def test_find_by_id_returns_none_when_reference_does_not_exist(self):
         self.assertIsNone(self._repository.find_by_id(uuid.uuid7()))
 
+    def test_id_creation_when_a_reference_is_created_but_id_is_empty(self):
+        reference = ReferenceDto(
+            ref_id=None,
+            ref_type="article",
+            title="Testing SQLite",
+            author="Matti Meikäläinen",
+            year=2026,
+            publisher="",
+        )
+        self._repository.save(reference)
+        _ref_list = self._repository.find_all()
+        self.assertIsNotNone(_ref_list[0])
+        ref_id = _ref_list[0].ref_id
+        assert ref_id is not None
+        found_reference = self._repository.find_by_id(ref_id)
+        assert found_reference is not None
+        self.assertEqual(found_reference.title, reference.title)
+
     def test_save_and_find_by_id(self):
         ref_id = uuid.uuid7()
         reference = ReferenceDto(
