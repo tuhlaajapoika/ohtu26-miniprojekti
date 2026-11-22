@@ -9,6 +9,7 @@ from refmanager.io.console_io import ConsoleIO
 
 
 def main() -> None:
+    
     """Function that prepares args, services and starts the main program."""
     parser = argparse.ArgumentParser(
         prog="refmanager",  # rename the program?
@@ -19,7 +20,7 @@ def main() -> None:
     cmdparser = parser.add_subparsers(
         dest="command",
         required=True,
-        metavar="COMMAND",
+        metavar="COMMAND ('new' → create a new reference, 'list' → list all references, 'export' → export references to BibTex format, 'quit' → quit the program)",
     )
 
     # With add_parser we can later define positional args for the commands.
@@ -38,6 +39,12 @@ def main() -> None:
         help="Export references to BibTex format",
         # description=("")
     )
+
+    cmdparser.add_parser(
+            "quit",
+            help="Quit the program",
+            # description=("")
+        )
 
     args = parser.parse_args()
 
