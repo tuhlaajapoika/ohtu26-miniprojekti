@@ -1,7 +1,8 @@
-import os
 import sqlite3
 import uuid
+from pathlib import Path
 
+from refmanager.config import PROJECT_ROOT
 from refmanager.db.initialize_database import initialize_database, table_exists
 from refmanager.models.reference_dto import ReferenceDto
 from refmanager.repositories.reference_repository import ReferenceRepository
@@ -11,9 +12,11 @@ class SqliteReferenceRepository(ReferenceRepository):
     """SQLite implementation of the reference data access interface."""
 
     def __init__(self, db_file):
-        dirname = os.path.dirname(__file__)
-        db_full_path = os.path.join(dirname, "..", "..", "..", db_file)
-        self.conn = sqlite3.connect(db_full_path)
+        db_path = Path(db_file)
+        if not db_path.is_absolute():
+            db_path = PROJECT_ROOT / db_path
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.conn = sqlite3.connect(db_path)
         self.conn.row_factory = sqlite3.Row
         # create_tables(self.conn)
         #
