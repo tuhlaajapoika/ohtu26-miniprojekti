@@ -4,6 +4,11 @@ from pathlib import Path
 
 from refmanager.config import PROJECT_ROOT
 from refmanager.db.initialize_database import create_tables, table_exists
+from refmanager.db.schema import (
+    FIND_ALL_REFERENCES_SQL,
+    FIND_REFERENCES_BY_ID_SQL,
+    INSERT_NEW_REFERENCE_SQL,
+)
 from refmanager.models.reference_dto import ReferenceDto
 from refmanager.repositories.reference_repository import ReferenceRepository
 
@@ -36,28 +41,7 @@ class SqliteReferenceRepository(ReferenceRepository):
         self.conn.close()
 
     def find_by_id(self, ref_id: uuid.UUID) -> ReferenceDto | None:
-        cursor = self.conn.execute(
-            """
-            SELECT
-                reference_id,
-                type,
-                title,
-                author,
-                year,
-                publisher,
-                journal,
-                volume,
-                issue,
-                pages,
-                url,
-                accessed_on,
-                proceedings,
-                institution,
-                thesis_type
-            FROM "references" WHERE reference_id = ?;
-            """,
-            (str(ref_id),),
-        )
+        cursor = self.conn.execute(FIND_REFERENCES_BY_ID_SQL, (str(ref_id),))
         row = cursor.fetchone()
         if row is not None:
             # Change row to ReferenceDto object
@@ -85,42 +69,24 @@ class SqliteReferenceRepository(ReferenceRepository):
             ref.ref_id = uuid.uuid7()
 
         cursor = self.conn.execute(
-            """
-            INSERT OR REPLACE INTO "references" (
-                reference_id,
-                type,
-                title,
-                author,
-                year,
-                publisher,
-                journal,
-                volume,
-                issue,
-                pages,
-                url,
-                accessed_on,
-                proceedings,
-                institution,
-                thesis_type)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-            """,
-            (
-                str(ref.ref_id),
-                ref.ref_type,
-                ref.title,
-                ref.author,
-                ref.year,
-                ref.publisher,
-                ref.journal,
-                ref.volume,
-                ref.issue,
-                ref.pages,
-                ref.url,
-                ref.accessed_on,
-                ref.proceedings,
-                ref.institution,
-                ref.thesis_type,
-            ),
+            INSERT_NEW_REFERENCE_SQL,
+            {
+                "reference_id": str(ref.ref_id),
+                "type": ref.ref_type,
+                "title": ref.title,
+                "author": ref.author,
+                "year": ref.year,
+                "publisher": ref.publisher,
+                "journal": ref.journal,
+                "volume": ref.volume,
+                "issue": ref.issue,
+                "pages": ref.pages,
+                "url": ref.url,
+                "accessed_on": ref.accessed_on,
+                "proceedings": ref.proceedings,
+                "institution": ref.institution,
+                "thesis_type": ref.thesis_type,
+            },
         )
 
         self.conn.commit()
@@ -131,27 +97,7 @@ class SqliteReferenceRepository(ReferenceRepository):
         return ref.ref_id
 
     def find_all(self) -> list[ReferenceDto]:
-        cursor = self.conn.execute(
-            """
-            SELECT
-                reference_id,
-                type,
-                title,
-                author,
-                year,
-                publisher,
-                journal,
-                volume,
-                issue,
-                pages,
-                url,
-                accessed_on,
-                proceedings,
-                institution,
-                thesis_type
-            FROM "references";
-            """,
-        )
+        cursor = self.conn.execute(FIND_ALL_REFERENCES_SQL)
         rows = cursor.fetchall()
         return [
             ReferenceDto(
