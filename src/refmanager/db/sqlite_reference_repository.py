@@ -110,3 +110,34 @@ class SqliteReferenceRepository(ReferenceRepository):
                 f"(database) Reference was not saved: {ref.ref_id}, {ref.title}"
             )
         return saved_id
+
+    def find_all(self) -> list[ReferenceDto]:
+        cursor = self.conn.execute(
+                    """
+                    SELECT reference_id, type, title, author, year,
+                    publisher, journal, volume, issue, pages, url, accessed_on,
+                    proceedings, institution, thesis_type
+                        FROM "references"
+                    """,
+        )
+        rows = cursor.fetchall()
+        return [
+            ReferenceDto(
+                ref_id=row["reference_id"],
+                ref_type=row["type"],
+                title=row["title"],
+                author=row["author"],
+                year=row["year"],
+                publisher=row["publisher"],
+                journal=row["journal"],
+                volume=row["volume"],
+                issue=row["issue"],
+                pages=row["pages"],
+                url=row["url"],
+                accessed_on=row["accessed_on"],
+                proceedings=row["proceedings"],
+                institution=row["institution"],
+                thesis_type=row["thesis_type"],
+            )
+            for row in rows
+        ]

@@ -20,3 +20,7 @@ class ReferenceRepository(ABC):
     @abstractmethod
     def save(self, ref: ReferenceDto) -> int:
         """Save reference and return its database ID."""
+
+    @abstractmethod
+    def find_all(self) -> list[ReferenceDto]:
+        """Return all references. Empty list if none"""

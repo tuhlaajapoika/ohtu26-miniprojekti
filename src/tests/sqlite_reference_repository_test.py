@@ -39,3 +39,13 @@ class TestSqliteReferenceRepository(unittest.TestCase):
         self._repository.save(original)
         self._repository.save(updated)
         self.assertEqual(self._repository.find_by_id(updated.ref_id), updated)
+
+    def test_find_all_returns_empty_list_when_no_references(self):
+        self.assertEqual(self._repository.find_all(), [])
+
+    def test_find_all_returns_all_saved_references(self):
+        first = ReferenceDto(1, "book", "Clean Code", "Robert C. Martin", 2008, "Prentice Hall")
+        second = ReferenceDto(2, "article", "Testing SQLite", "Matti Meikäläinen", 2026, "")
+        self._repository.save(first)
+        self._repository.save(second)
+        self.assertCountEqual(self._repository.find_all(), [first, second])
