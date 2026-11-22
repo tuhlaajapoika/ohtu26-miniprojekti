@@ -1,5 +1,9 @@
 """Listing of saved references."""
 
+NO_REFERENCES_MESSAGE = (
+    "Ei tallennettuja viitteitä. Lisää viite komennolla: refmanager new"
+)
+
 
 def sort_references(references):
     """Return references sorted by author, year and title (case-insensitive)."""
@@ -15,6 +19,13 @@ def format_reference(ref):
 
 
 def list_references(repository, io, formatter=format_reference):
-    """Write all references to io in sorted order, one per line."""
-    for ref in sort_references(repository.find_all()):
+    """Write all references to io in sorted order, one per line.
+
+    Writes a message instead if there are no references.
+    """
+    references = repository.find_all()
+    if not references:
+        io.write(NO_REFERENCES_MESSAGE)
+        return
+    for ref in sort_references(references):
         io.write(formatter(ref))

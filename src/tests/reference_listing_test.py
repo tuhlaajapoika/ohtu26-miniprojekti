@@ -5,7 +5,7 @@ from refmanager.services.reference_listing import list_references, sort_referenc
 from stub_io import StubIO
 
 
-class FakeRepository:  #pylint: disable=too-few-public-methods
+class FakeRepository:  # pylint: disable=too-few-public-methods
     """Korvaa oikean tietokannan testeissä."""
 
     def __init__(self, references):
@@ -78,3 +78,11 @@ class TestListReferences(unittest.TestCase):
             formatter=lambda ref: ref.author.upper(),
         )
         self.assertEqual(io.outputs, ["MARTIN"])
+
+    def test_empty_repository_writes_no_references_message(self):
+        io = StubIO()
+        list_references(FakeRepository([]), io)
+        self.assertEqual(
+            io.outputs,
+            ["Ei tallennettuja viitteitä. Lisää viite komennolla: refmanager new"],
+        )
