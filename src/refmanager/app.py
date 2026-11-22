@@ -3,6 +3,7 @@ import uuid
 from textwrap import dedent
 
 from refmanager.models.reference_dto import ReferenceDto
+from refmanager.services.reference_listing import list_references
 
 
 class UserQuitException(Exception):
@@ -24,7 +25,7 @@ class App:
                     ref_id = self.repository.save(reference)
                     self.io.write(f"Viite lisätty (ID: {ref_id})")
                 case "list":
-                    self.io.write("Not implemented: list")
+                    list_references(self.repository, self.io)
                 case "export":
                     self.io.write("Not implemented: export")
                 case "quit":

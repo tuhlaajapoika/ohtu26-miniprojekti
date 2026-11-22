@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+from types import SimpleNamespace
 
 from refmanager.app import App
 from refmanager.config import DATABASE_FILE_TESTS
@@ -74,9 +75,16 @@ class TestApp(unittest.TestCase):
         self.assertEqual(len(self._io.outputs), 2)
         self.assertIn("Viite lisätty", self._io.outputs[-1])
 
-    def test_running_command_list_returns_not_implemented(self):
-        self._app.run(command="list")
-        self.assertEqual(self._io.outputs, ["Not implemented: list"])
+    def test_running_command_list_writes_references_from_repository(self):
+        reference = SimpleNamespace(
+            ref_id=1, author="Martin", year=2008, title="Clean Code"
+        )
+        repository = SimpleNamespace(find_all=lambda: [reference])
+        app = App(ref_repository=repository, io=self._io)
+
+        app.run(command="list")
+
+        self.assertEqual(self._io.outputs, ["[1] Martin (2008): Clean Code"])
 
     def test_running_command_export_returns_not_implemented(self):
         self._app.run(command="export")
