@@ -15,6 +15,7 @@ class TestApp(unittest.TestCase):
 
     def test_new_reference(self):
         app = AppLibrary(self._db_file)
+        self.addCleanup(app.close)
         app.input("1")
         app.input("Clean Code")
         app.input("Robert C. Martin")

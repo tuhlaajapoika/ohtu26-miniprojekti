@@ -30,5 +30,8 @@ class AppLibrary:
     def outputs(self):
         return self._io.outputs
 
+    def close(self):
+        self._repository.close()
+
     # def create_reference(self, title, author, year):
     #  self._reference_service.create(title, author, year)

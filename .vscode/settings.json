@@ -1,5 +1,6 @@
 {
     "editor.renderWhitespace": "trailing",
     "editor.trimAutoWhitespace": true,
+    "files.eol": "\n",
     "python-envs.defaultEnvManager": "ms-python.python:venv",
 }

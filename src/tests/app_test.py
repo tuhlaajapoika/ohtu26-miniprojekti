@@ -1,4 +1,5 @@
 import os
+import shutil
 import tempfile
 import unittest
 from types import SimpleNamespace
@@ -106,24 +107,25 @@ class TestApp(unittest.TestCase):
         )
 
     def test_running_command_new_saves_book_to_sqlite(self):
-        with tempfile.TemporaryDirectory() as _temp_dir:
-            _db_file = os.path.join(_temp_dir, DATABASE_FILE_TESTS)
-            _repository = SqliteReferenceRepository(_db_file)
-            self.addCleanup(_repository.get_db_connection().close)
-            self._io.inputs = [
-                "1",
-                "Testikirja",
-                "Testitekijä",
-                "2024",
-                "Testikustantaja",
-            ]
-            _app = App(ref_repository=_repository, io=self._io)
-            _app.run(command="new")
+        _temp_dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, _temp_dir)
+        _db_file = os.path.join(_temp_dir, DATABASE_FILE_TESTS)
+        _repository = SqliteReferenceRepository(_db_file)
+        self.addCleanup(_repository.close)
+        self._io.inputs = [
+            "1",
+            "Testikirja",
+            "Testitekijä",
+            "2024",
+            "Testikustantaja",
+        ]
+        _app = App(ref_repository=_repository, io=self._io)
+        _app.run(command="new")
 
-            _row = (
-                _repository.get_db_connection()
-                .execute('SELECT title FROM "references"')
-                .fetchone()
-            )
+        _row = (
+            _repository.get_db_connection()
+            .execute('SELECT title FROM "references"')
+            .fetchone()
+        )
 
-            self.assertEqual(_row["title"], "Testikirja")
+        self.assertEqual(_row["title"], "Testikirja")
