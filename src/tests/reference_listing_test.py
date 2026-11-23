@@ -1,6 +1,6 @@
 import unittest
 
-from refmanager.models.reference_dto import ReferenceDto
+from refmanager.models.reference_dto import ReferenceDTO
 from refmanager.services.reference_listing import list_references, sort_references
 from stub_io import StubIO
 
@@ -16,7 +16,7 @@ class FakeRepository:  # pylint: disable=too-few-public-methods
 
 
 def make_ref(ref_id, author, year, title="Title"):
-    return ReferenceDto(
+    return ReferenceDTO(
         ref_id=ref_id,
         ref_type="Kirja",
         title=title,

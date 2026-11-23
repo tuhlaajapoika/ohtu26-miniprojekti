@@ -6,7 +6,7 @@ import uuid
 
 from refmanager.config import DATABASE_FILE_TESTS
 from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
-from refmanager.models.reference_dto import ReferenceDto
+from refmanager.models.reference_dto import ReferenceDTO
 
 
 class TestSqliteReferenceRepository(unittest.TestCase):
@@ -23,7 +23,7 @@ class TestSqliteReferenceRepository(unittest.TestCase):
         self.assertIsNone(self._repository.find_by_id(uuid.uuid7()))
 
     def test_id_creation_when_a_reference_is_created_but_id_is_empty(self):
-        reference = ReferenceDto(
+        reference = ReferenceDTO(
             ref_id=None,
             ref_type="article",
             title="Testing SQLite",
@@ -42,7 +42,7 @@ class TestSqliteReferenceRepository(unittest.TestCase):
 
     def test_save_and_find_by_id(self):
         ref_id = uuid.uuid7()
-        reference = ReferenceDto(
+        reference = ReferenceDTO(
             ref_id=ref_id,
             ref_type="article",
             title="Testing SQLite",
@@ -55,8 +55,8 @@ class TestSqliteReferenceRepository(unittest.TestCase):
 
     def test_save_replaces_existing_reference_with_same_id(self):
         ref_id = uuid.uuid7()
-        original = ReferenceDto(ref_id, "article", "Original", "Keijo", 2020, "")
-        updated = ReferenceDto(
+        original = ReferenceDTO(ref_id, "article", "Original", "Keijo", 2020, "")
+        updated = ReferenceDTO(
             ref_id, "book", "Updated", "Kaija", 2025, "FreshPublisher"
         )
         self._repository.save(original)
@@ -67,7 +67,7 @@ class TestSqliteReferenceRepository(unittest.TestCase):
         self.assertEqual(self._repository.find_all(), [])
 
     def test_find_all_returns_all_saved_references(self):
-        first = ReferenceDto(
+        first = ReferenceDTO(
             uuid.uuid7(),
             "book",
             "Clean Code",
@@ -75,7 +75,7 @@ class TestSqliteReferenceRepository(unittest.TestCase):
             2008,
             "Prentice Hall",
         )
-        second = ReferenceDto(
+        second = ReferenceDTO(
             uuid.uuid7(), "article", "Testing SQLite", "Matti Meikäläinen", 2026, ""
         )
         self._repository.save(first)

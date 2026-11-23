@@ -1,7 +1,7 @@
 import unittest
 import uuid
 
-from refmanager.models.reference_dto import ReferenceDto
+from refmanager.models.reference_dto import ReferenceDTO
 from refmanager.services.reference_formatter import format_reference
 
 
@@ -15,7 +15,7 @@ def make_reference(ref_type, **fields):
         "publisher": "",
     }
     defaults.update(fields)
-    return ReferenceDto(**defaults)
+    return ReferenceDTO(**defaults)
 
 
 class TestFormatReference(unittest.TestCase):

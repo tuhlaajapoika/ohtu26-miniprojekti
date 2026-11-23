@@ -1,16 +1,16 @@
 """Formatting of references for the listing."""
 
-from refmanager.models.reference_dto import ReferenceDto
+from refmanager.models.reference_dto import ReferenceDTO
 
 
-def _book_details(ref: ReferenceDto) -> list[str]:
+def _book_details(ref: ReferenceDTO) -> list[str]:
     parts = []
     if ref.publisher:
         parts.append(ref.publisher)
     return parts
 
 
-def _article_details(ref: ReferenceDto) -> list[str]:
+def _article_details(ref: ReferenceDTO) -> list[str]:
     parts = []
     if ref.volume:
         parts.append(f"vol. {ref.volume}")
@@ -21,7 +21,7 @@ def _article_details(ref: ReferenceDto) -> list[str]:
     return parts
 
 
-def _website_details(ref: ReferenceDto) -> list[str]:
+def _website_details(ref: ReferenceDTO) -> list[str]:
     parts = []
     if ref.url:
         parts.append(ref.url)
@@ -30,14 +30,14 @@ def _website_details(ref: ReferenceDto) -> list[str]:
     return parts
 
 
-def _conference_details(ref: ReferenceDto) -> list[str]:
+def _conference_details(ref: ReferenceDTO) -> list[str]:
     parts = []
     if ref.proceedings:
         parts.append(ref.proceedings)
     return parts
 
 
-def _thesis_details(ref: ReferenceDto) -> list[str]:
+def _thesis_details(ref: ReferenceDTO) -> list[str]:
     parts = []
     if ref.institution:
         parts.append(ref.institution)
@@ -55,7 +55,7 @@ _DETAILS_BY_TYPE = {
 }
 
 
-def format_reference(ref: ReferenceDto) -> str:
+def format_reference(ref: ReferenceDTO) -> str:
     """Return a readable one-line presentation of a reference."""
     text = f"{ref.ref_type}: {ref.author} ({ref.year}). {ref.title}."
 

@@ -9,7 +9,7 @@ from refmanager.db.schema import (
     FIND_REFERENCES_BY_ID_SQL,
     INSERT_NEW_REFERENCE_SQL,
 )
-from refmanager.models.reference_dto import ReferenceDto
+from refmanager.models.reference_dto import ReferenceDTO
 from refmanager.repositories.reference_repository import ReferenceRepository
 
 
@@ -40,11 +40,11 @@ class SqliteReferenceRepository(ReferenceRepository):
         self.conn.commit()
         self.conn.close()
 
-    def find_by_id(self, ref_id: uuid.UUID) -> ReferenceDto | None:
+    def find_by_id(self, ref_id: uuid.UUID) -> ReferenceDTO | None:
         cursor = self.conn.execute(FIND_REFERENCES_BY_ID_SQL, (str(ref_id),))
         row = cursor.fetchone()
         if row is not None:
-            return ReferenceDto(
+            return ReferenceDTO(
                 ref_id=uuid.UUID(row["reference_id"]),
                 ref_type=row["type"],
                 title=row["title"],
@@ -63,7 +63,7 @@ class SqliteReferenceRepository(ReferenceRepository):
             )
         return None
 
-    def save(self, ref: ReferenceDto) -> uuid.UUID:
+    def save(self, ref: ReferenceDTO) -> uuid.UUID:
         if ref.ref_id is None:
             ref.ref_id = uuid.uuid7()
 
@@ -95,11 +95,11 @@ class SqliteReferenceRepository(ReferenceRepository):
             )
         return ref.ref_id
 
-    def find_all(self) -> list[ReferenceDto]:
+    def find_all(self) -> list[ReferenceDTO]:
         cursor = self.conn.execute(FIND_ALL_REFERENCES_SQL)
         rows = cursor.fetchall()
         return [
-            ReferenceDto(
+            ReferenceDTO(
                 ref_id=uuid.UUID(row["reference_id"]),
                 ref_type=row["type"],
                 title=row["title"],
