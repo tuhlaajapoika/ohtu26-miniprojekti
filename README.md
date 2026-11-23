@@ -17,7 +17,7 @@ Yleistä miniprojektista
 
 ## Development
 
-Kloonaa repositorio ja suorita `uv sync`. Ohjelma voidaan suorittaa komentoriviltä ja näyttää oletuksena käytettävät komennot:
+Kloonaa repositorio ja suorita `uv sync`. Ohjelma voidaan suorittaa komentoriviltä:
 
 ```shell
 uv run refmanager
