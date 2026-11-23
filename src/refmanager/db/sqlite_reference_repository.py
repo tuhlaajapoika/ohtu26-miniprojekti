@@ -44,7 +44,6 @@ class SqliteReferenceRepository(ReferenceRepository):
         cursor = self.conn.execute(FIND_REFERENCES_BY_ID_SQL, (str(ref_id),))
         row = cursor.fetchone()
         if row is not None:
-            # Change row to ReferenceDto object
             return ReferenceDto(
                 ref_id=uuid.UUID(row["reference_id"]),
                 ref_type=row["type"],

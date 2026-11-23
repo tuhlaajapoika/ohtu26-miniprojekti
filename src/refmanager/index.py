@@ -12,7 +12,7 @@ from refmanager.io.console_io import ConsoleIO
 def main() -> None:
     """Function that prepares args, services and starts the main program."""
     parser = argparse.ArgumentParser(
-        prog="refmanager",  # rename the program?
+        prog="refmanager",
         description="Manage academic references with ease",
     )
 
@@ -39,11 +39,7 @@ def main() -> None:
         description=("Export references to a .bib file in BibTex format"),
     )
 
-    cmdparser.add_parser(
-        "quit",
-        help="Quit the program",
-        # description=("")
-    )
+    cmdparser.add_parser("quit", help="Quit the program")
 
     args = parser.parse_args()
 
