@@ -11,7 +11,7 @@ class ReferenceDTO:  # pylint: disable=too-many-instance-attributes
     title: str
     author: str
     year: int
-    publisher: str
+    publisher: str = ""
     journal: str = ""
     volume: str = ""
     issue: str = ""
