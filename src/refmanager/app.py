@@ -2,13 +2,10 @@ import sys
 import uuid
 from textwrap import dedent
 
+from refmanager.exceptions import UserQuitException
 from refmanager.models.reference_dto import ReferenceDTO
 from refmanager.services.reference_formatter import format_reference
 from refmanager.services.reference_listing import list_references
-
-
-class UserQuitException(Exception):
-    """An exception raised when the user chooses to quit the application."""
 
 
 class App:
