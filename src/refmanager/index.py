@@ -20,25 +20,42 @@ def main() -> None:
         prog="refmanager", dest="command", metavar="COMMAND"
     )
 
-    # With add_parser we can later define positional args for the commands.
+    # Tag ----------------------------------------------------------------------
+    tag_parser = argparse.ArgumentParser(add_help=False)
+    tag_parser.add_argument(
+        "-t",
+        "--tag",
+        nargs="+",
+        help="Specify one or more tags",
+    )
+
+    # New ----------------------------------------------------------------------
     cmdparser.add_parser(
         "new",
         help="Create a new reference",
         description=(
             "Create new references interactively by filling required and optional fields"
         ),
+        parents=[tag_parser],
     )
+
+    # List ---------------------------------------------------------------------
     cmdparser.add_parser(
         "list",
         help="List all references",
-        description=("List all saved references in human readable format"),
+        description="List all saved references in human readable format",
+        parents=[tag_parser],
     )
+
+    # Export -------------------------------------------------------------------
     cmdparser.add_parser(
         "export",
         help="Export references to BibTex format",
-        description=("Export references to a .bib file in BibTex format"),
+        description="Export references to a .bib file in BibTex format",
+        parents=[tag_parser],
     )
 
+    # Quit ---------------------------------------------------------------------
     cmdparser.add_parser("quit", help="Quit the program")
 
     args = parser.parse_args()

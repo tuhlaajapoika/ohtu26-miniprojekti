@@ -1,3 +1,4 @@
+import argparse
 import os
 import sqlite3
 import sys
@@ -34,6 +35,37 @@ class TestIndex(unittest.TestCase):
                     io=console_io,
                 )
                 app.run.assert_called_once_with(command=command)
+
+    def test_tags_argument_is_a_list(self):
+        command = "new"
+        tags = ("tag.1", "tag.2", "tag.3", "many-tags")
+        expected = argparse.Namespace(command=command, tag=list(tags))
+        parsed_args = []
+        original_parse_args = argparse.ArgumentParser.parse_args
+
+        def capture_parse_args(parser, args=None, namespace=None):
+            result = original_parse_args(parser, args, namespace)
+            parsed_args.append(result)
+            return result
+
+        console_io = Mock()
+        repository = Mock()
+        app = Mock()
+
+        with (
+            patch.object(sys, "argv", ["refmanager", command, "--tag", *tags]),
+            patch.object(argparse.ArgumentParser, "parse_args", capture_parse_args),
+            patch("refmanager.index.ConsoleIO", return_value=console_io),
+            patch(
+                "refmanager.index.SqliteReferenceRepository",
+                return_value=repository,
+            ),
+            patch("refmanager.index.App", return_value=app),
+        ):
+            index.main()
+
+        self.assertEqual(parsed_args[0], expected)
+        self.assertIsInstance(parsed_args[0].tag, list)
 
     def test_main_displays_available_commands_when_no_command_is_passed(self):
         help_usage_positional_args = (
