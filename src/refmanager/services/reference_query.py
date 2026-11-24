@@ -1,4 +1,3 @@
-import sys
 import uuid
 from textwrap import dedent
 
@@ -40,26 +39,17 @@ class ReferenceRunner:
         self.io = io
 
     def run(self, command):
-        try:
-            match command:
-                case "new":
-                    reference = self.create_reference()
-                    ref_id = self.repository.save(reference)
-                    self.io.write(f"Viite lisätty (ID: {ref_id})")
-                case "list":
-                    list_references(
-                        self.repository, self.io, formatter=format_reference
-                    )
-                case "export":
-                    self.io.write("Not implemented: export")
-                case "quit":
-                    raise UserQuitException()
-        except UserQuitException:
-            self.io.write("Quitting the program.")
-            sys.exit(0)
-        except RuntimeError as e:
-            self.io.write(f"{e}")
-            sys.exit(1)
+        match command:
+            case "new":
+                reference = self.create_reference()
+                ref_id = self.repository.save(reference)
+                self.io.write(f"Viite lisätty (ID: {ref_id})")
+            case "list":
+                list_references(self.repository, self.io, formatter=format_reference)
+            case "export":
+                self.io.write("Not implemented: export")
+            case "quit":
+                raise UserQuitException("Quitting the program.")
 
     def create_reference(self):
         ref_type = self._select_reference_type()
@@ -100,7 +90,7 @@ class ReferenceRunner:
         """Read input from the user and quit if the user types 'quit'."""
         value = self.io.read(prompt)
         if value.strip().lower() == "quit":
-            raise UserQuitException()
+            raise UserQuitException("Quitting the program.")
         return value
 
     def _collect_reference_details(self, ref_type):
