@@ -14,7 +14,7 @@ from stub_io import StubIO
 class TestApp(unittest.TestCase):
     def setUp(self):
         self._repository = StubReferenceDatabase()
-        self.addCleanup(self._repository.cleanup)
+        self.addCleanup(self._repository.close)
         self._io = StubIO()
         self._app = App(ref_repository=self._repository, io=self._io)
 

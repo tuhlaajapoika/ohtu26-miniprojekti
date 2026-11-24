@@ -25,7 +25,8 @@ class StubReferenceDatabase:
     def get_db_connection(self):
         return self._conn
 
-    def cleanup(self):
+    def close(self):
+        self._conn.commit()
         self._conn.close()
         shutil.rmtree(self._temp_dir)
 

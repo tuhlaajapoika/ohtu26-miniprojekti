@@ -1,7 +1,7 @@
 from refmanager.services.reference_query import ReferenceRunner
 
 
-class App:  # pylint: disable=too-few-public-methods
+class App:
     """Application entry point that delegates commands to ReferenceRunner."""
 
     def __init__(self, ref_repository, io):
@@ -10,4 +10,13 @@ class App:  # pylint: disable=too-few-public-methods
         self.runner = ReferenceRunner(ref_repository, io)
 
     def run(self, command):
+        """Starts service runner
+
+        Args:
+            command (dynamic attribute): command passed into the program by the user
+        """
         self.runner.run(command)
+
+    def quit(self):
+        """Closes the repository in use"""
+        self.repository.close()

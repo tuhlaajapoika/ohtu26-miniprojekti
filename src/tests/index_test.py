@@ -1,4 +1,5 @@
 import os
+import sqlite3
 import sys
 import unittest
 from contextlib import redirect_stdout
@@ -35,15 +36,20 @@ class TestIndex(unittest.TestCase):
                 app.run.assert_called_once_with(command=command)
 
     def test_main_displays_available_commands_when_no_command_is_passed(self):
+        help_usage_positional_args = (
+            "positional arguments:",
+            "COMMAND",
+            "new       Create a new reference",
+            "list      List all references",
+            "export    Export references to BibTex format",
+            "quit      Quit the program",
+        )
         output = StringIO()
         with patch.object(sys, "argv", ["refmanager"]), redirect_stdout(output):
             index.main()
 
-        self.assertIn("positional arguments:", output.getvalue())
-        self.assertIn("new       Create a new reference", output.getvalue())
-        self.assertIn("list      List all references", output.getvalue())
-        self.assertIn("export    Export references to BibTex format", output.getvalue())
-        self.assertIn("quit      Quit the program", output.getvalue())
+        for line in help_usage_positional_args:
+            self.assertIn(line, output.getvalue())
 
     def test_main_rejects_unknown_command(self):
         with (
@@ -68,13 +74,54 @@ class TestIndex(unittest.TestCase):
                 return_value=repository,
             ),
             patch("refmanager.index.App", return_value=app),
-            patch("refmanager.index.print") as print_mock,
             patch("refmanager.index.sys.exit") as exit_mock,
         ):
             index.main()
 
-        print_mock.assert_called_once_with(
-            f"{os.linesep}User interrupt captured.", console_io
+        console_io.write.assert_called_once_with(
+            f"{os.linesep}User interrupt captured."
         )
-        repository.close.assert_called_once_with()
+        app.quit.assert_called_once_with()
         exit_mock.assert_called_once_with(130)
+
+    def test_main_runtime_error(self):
+        console_io = Mock()
+        repository = Mock()
+        app = Mock()
+        app.run.side_effect = RuntimeError("test RuntimeError")
+
+        with (
+            patch.object(sys, "argv", ["refmanager", "list"]),
+            patch("refmanager.index.ConsoleIO", return_value=console_io),
+            patch(
+                "refmanager.index.SqliteReferenceRepository",
+                return_value=repository,
+            ),
+            patch("refmanager.index.App", return_value=app),
+            patch("refmanager.index.sys.exit") as exit_mock,
+        ):
+            index.main()
+
+        console_io.write.assert_called_once_with("ERROR: test RuntimeError")
+        exit_mock.assert_called_once_with(1)
+
+    def test_main_sqlite_error(self):
+        console_io = Mock()
+        repository = Mock()
+        app = Mock()
+        app.run.side_effect = sqlite3.OperationalError("test OperationalError")
+
+        with (
+            patch.object(sys, "argv", ["refmanager", "list"]),
+            patch("refmanager.index.ConsoleIO", return_value=console_io),
+            patch(
+                "refmanager.index.SqliteReferenceRepository",
+                return_value=repository,
+            ),
+            patch("refmanager.index.App", return_value=app),
+            patch("refmanager.index.sys.exit") as exit_mock,
+        ):
+            index.main()
+
+        console_io.write.assert_called_once_with("ERROR: test OperationalError")
+        exit_mock.assert_called_once_with(1)

@@ -56,13 +56,15 @@ def main() -> None:
         try:
             app.run(command=args.command)
         except KeyboardInterrupt:
-            print(f"{os.linesep}User interrupt captured.", console_io)
-            sqlite_repository.close()
+            console_io.write(f"{os.linesep}User interrupt captured.")
+            app.quit()
             sys.exit(130)
     except RuntimeError as e:
-        print(f"ERROR: {e}")
+        console_io.write(f"ERROR: {e}")
+        sys.exit(1)
     except sqlite3.OperationalError as e:
-        print(f"ERROR: {e}")
+        console_io.write(f"ERROR: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

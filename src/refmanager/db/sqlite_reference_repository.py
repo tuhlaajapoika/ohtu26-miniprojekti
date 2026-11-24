@@ -36,7 +36,7 @@ class SqliteReferenceRepository(ReferenceRepository):
         return self.conn
 
     def close(self):
-        """Close the database connection."""
+        """Commit and close the database connection."""
         self.conn.commit()
         self.conn.close()
 
