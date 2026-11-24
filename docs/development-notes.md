@@ -10,6 +10,18 @@ Run tests and create branch coverage report:
 coverage run --branch -m pytest; coverage html; coverage report -m
 ```
 
+or with `pytest-cov`:
+
+```shell
+# uses coverage.py
+pytest --cov=src --cov-branch --cov-report=html src
+# for both html and xml reports, use: --cov-report=html --cov-report=xml
+```
+
+### Coverage in VS Code
+
+Install required vscode [Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python) extension if not installed. "Testing" icon should be visible in the sidepanel, right click and enable if not. Select "Run Tests with Coverage" and UI should show tests' status and coverage, both in the panel and in opened files.
+
 ## Ruff
 
 [Comparing Ruff and Pylint](https://pydevtools.com/handbook/explanation/how-do-ruff-and-pylint-compare/)

@@ -3,4 +3,10 @@
     "editor.trimAutoWhitespace": true,
     "files.eol": "\n",
     "python-envs.defaultEnvManager": "ms-python.python:venv",
+    "python.testing.pytestArgs": [
+        "src",
+        "--cov-report=html",
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
 }
