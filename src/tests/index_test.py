@@ -8,6 +8,7 @@ from io import StringIO
 from unittest.mock import Mock, patch
 
 from refmanager import index
+from refmanager.exceptions import UserQuitException
 
 
 class TestIndex(unittest.TestCase):
@@ -113,8 +114,29 @@ class TestIndex(unittest.TestCase):
         console_io.write.assert_called_once_with(
             f"{os.linesep}User interrupt captured."
         )
-        app.quit.assert_called_once_with()
+        app.quit.assert_called_once()
         exit_mock.assert_called_once_with(130)
+
+    def test_main_closes_database_and_exits_on_user_quit(self):
+        console_io = Mock()
+        repository = Mock()
+        app = Mock()
+        app.run.side_effect = UserQuitException("Quitting the program.")
+
+        with (
+            patch.object(sys, "argv", ["refmanager", "quit"]),
+            patch("refmanager.index.ConsoleIO", return_value=console_io),
+            patch(
+                "refmanager.index.SqliteReferenceRepository",
+                return_value=repository,
+            ),
+            patch("refmanager.index.App", return_value=app),
+            patch("refmanager.index.sys.exit") as exit_mock,
+        ):
+            index.main()
+        console_io.write.assert_called_once_with("Quitting the program.")
+        app.quit.assert_called_once()
+        exit_mock.assert_called_once_with(0)
 
     def test_main_runtime_error(self):
         console_io = Mock()

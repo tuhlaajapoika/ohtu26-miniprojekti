@@ -73,12 +73,14 @@ def main() -> None:
         app = App(ref_repository=sqlite_repository, io=console_io)
         try:
             app.run(command=args.command)
-        except KeyboardInterrupt:
-            console_io.write(f"{os.linesep}User interrupt captured.")
+        finally:
+            # quit gracefully, commit changes to the database.
             app.quit()
-            sys.exit(130)
-    except UserQuitException as e:
-        console_io.write(f"{e}")
+    except KeyboardInterrupt:
+        console_io.write(f"{os.linesep}User interrupt captured.")
+        sys.exit(130)
+    except UserQuitException as message:
+        console_io.write(f"{message}")
         sys.exit(0)
     except RuntimeError as e:
         console_io.write(f"ERROR: {e}")

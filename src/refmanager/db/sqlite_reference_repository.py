@@ -30,7 +30,9 @@ class SqliteReferenceRepository(ReferenceRepository):
         # initialize_database(self.conn)
 
         if not table_exists(self.conn):
-            raise sqlite3.OperationalError("'references' table does not exist.")
+            raise sqlite3.OperationalError(
+                "(database) 'references' table does not exist."
+            )
 
     def get_db_connection(self):
         return self.conn
@@ -88,11 +90,12 @@ class SqliteReferenceRepository(ReferenceRepository):
             },
         )
 
-        self.conn.commit()
+        # Only checks if INSERT was succesful.
         if cursor.rowcount != 1:
             raise RuntimeError(
                 f"(database) Reference was not saved: {ref.ref_id}, {ref.title}"
             )
+        self.conn.commit()
         return ref.ref_id
 
     def find_all(self) -> list[ReferenceDTO]:
