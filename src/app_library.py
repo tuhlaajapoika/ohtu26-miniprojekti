@@ -18,7 +18,6 @@ class AppLibrary:
 
     def output_should_contain(self, value):
         outputs = self._io.outputs
-
         if not value in outputs:
             raise AssertionError(
                 f'Output "{value}" is not in {outputs!s}'  # conversion flag str(outputs)

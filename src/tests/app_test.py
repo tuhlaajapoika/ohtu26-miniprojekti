@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from types import SimpleNamespace
 
+from app_library import AppLibrary
 from refmanager.app import App
 from refmanager.config import DATABASE_FILE_TESTS
 from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
@@ -13,11 +14,30 @@ from stub_io import StubIO
 
 class TestApp(unittest.TestCase):
     def setUp(self):
+        # AppLibrary
+        self._temp_dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self._temp_dir)
+        self._db_file = os.path.join(self._temp_dir, DATABASE_FILE_TESTS)
+        # StubDB
         self._repository = StubReferenceDatabase()
         self.addCleanup(self._repository.close)
         self._io = StubIO()
         self._app = App(ref_repository=self._repository, io=self._io)
 
+    # Tests using AppLibrary
+    def test_new_reference_using_app_library(self):
+        """Test new reference using AppLibrary"""
+        app = AppLibrary(self._db_file)
+        self.addCleanup(app.close)
+        app.input("1")
+        app.input("Clean Code")
+        app.input("Robert C. Martin")
+        app.input("2008")
+        app.input("Prentice hall")
+        app.run_application("new")
+        self.assertTrue(app.outputs()[-1].startswith("Viite lisätty (ID: "))
+
+    # Tests using StubDB
     def test_running_command_new_adds_book_reference(self):
         self._io.inputs = ["1", "Testikirja", "Testitekijä", "2024", "Testikustantaja"]
         self._app.run(command="new")
@@ -87,9 +107,7 @@ class TestApp(unittest.TestCase):
         )
         _repository = SimpleNamespace(find_all=lambda: [_reference])
         _app = App(ref_repository=_repository, io=self._io)
-
         _app.run(command="list")
-
         self.assertEqual(
             self._io.outputs, ["Kirja: Martin (2008). Clean Code. Prentice Hall."]
         )
@@ -101,7 +119,6 @@ class TestApp(unittest.TestCase):
     def test_running_command_new_with_invalid_reference_type(self):
         self._io.inputs = ["9", "2", "testiartikkeli", "2024", "22", "3", "38-40"]
         self._app.run(command="new")
-
         self.assertIn(
             "Virheellinen valinta. Valitse 1, 2, 3, 4 tai 5. ", self._io.outputs
         )
@@ -121,11 +138,9 @@ class TestApp(unittest.TestCase):
         ]
         _app = App(ref_repository=_repository, io=self._io)
         _app.run(command="new")
-
         _row = (
             _repository.get_db_connection()
             .execute('SELECT title FROM "references"')
             .fetchone()
         )
-
         self.assertEqual(_row["title"], "Testikirja")
