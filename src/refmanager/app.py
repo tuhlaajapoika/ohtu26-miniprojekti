@@ -18,5 +18,5 @@ class App:
         self.runner.run(command)
 
     def quit(self):
-        """Closes the repository in use"""
+        """Closes the repository"""
         self.repository.close()
