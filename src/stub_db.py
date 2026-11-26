@@ -34,18 +34,66 @@ class StubReferenceDatabase:
         if ref.ref_id is None:
             ref.ref_id = uuid.uuid7()
         self._conn.execute(
-            """
-            INSERT OR REPLACE INTO "references"
-                (reference_id, type, title, author, year, publisher)
-            VALUES (?, ?, ?, ?, ?, ?);
-            """,
-            (
-                str(ref.ref_id),
-                ref.ref_type,
-                ref.title,
-                ref.author,
-                ref.year,
-                ref.publisher,
-            ),
+            _STUB_INSERT_OR_REPLACE_REFERENCE_SQL,
+            {
+                "reference_id": str(ref.ref_id),
+                "type": ref.ref_type,
+                "title": ref.title,
+                "author": ref.author,
+                "year": ref.year,
+                "publisher": ref.publisher,
+                "journal": ref.journal,
+                "volume": ref.volume,
+                "issue": ref.issue,
+                "pages": ref.pages,
+                "url": ref.url,
+                "accessed_on": ref.accessed_on,
+                "proceedings": ref.proceedings,
+                "institution": ref.institution,
+                "thesis_type": ref.thesis_type,
+            },
         )
         self._conn.commit()
+
+
+_STUB_REFERENCE_COLUMNS = (
+    "reference_id",
+    "type",
+    "title",
+    "author",
+    "year",
+    "publisher",
+    "journal",
+    "volume",
+    "issue",
+    "pages",
+    "url",
+    "accessed_on",
+    "proceedings",
+    "institution",
+    "thesis_type",
+)
+_STUB_REFERENCE_COLUMN_LIST = ",\n    ".join(_STUB_REFERENCE_COLUMNS)
+
+_STUB_INSERT_OR_REPLACE_REFERENCE_SQL = f"""
+    INSERT OR REPLACE INTO "references" (
+        {_STUB_REFERENCE_COLUMN_LIST}
+    )
+    VALUES (
+        :reference_id,
+        :type,
+        :title,
+        :author,
+        :year,
+        :publisher,
+        :journal,
+        :volume,
+        :issue,
+        :pages,
+        :url,
+        :accessed_on,
+        :proceedings,
+        :institution,
+        :thesis_type
+    );
+"""
