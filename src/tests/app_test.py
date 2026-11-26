@@ -8,28 +8,53 @@ from app_library import AppLibrary
 from refmanager.app import App
 from refmanager.config import DATABASE_FILE_TESTS
 from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
+from refmanager.exceptions import UserQuitException
+from refmanager.models.reference_types import REFERENCE_TYPES
 from stub_db import StubReferenceDatabase
 from stub_io import StubIO
 
 
 class TestApp(unittest.TestCase):
     def setUp(self):
-        # AppLibrary
+        # For tests using AppLibrary
         self._temp_dir = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self._temp_dir)
         self._db_file = os.path.join(self._temp_dir, DATABASE_FILE_TESTS)
-        # StubDB
+
+        # For tests using StubDB
         self._repository = StubReferenceDatabase()
         self.addCleanup(self._repository.close)
         self._io = StubIO()
+
+        # "number: reference_type"
+        self._ref_options = {
+            str(number): reference_type
+            for number, reference_type in enumerate(REFERENCE_TYPES.values(), start=1)
+        }
         self._app = App(ref_repository=self._repository, io=self._io)
+
+    def _ref_option_for(self, reference_type):
+        """Returns number of the reference type"""
+        return next(
+            option
+            for option, type_name in self._ref_options.items()
+            if type_name == reference_type
+        )
+
+    def _assert_saved_reference_type(self, reference_type):
+        row = (
+            self._repository.get_db_connection()
+            .execute('SELECT type FROM "references"')
+            .fetchone()
+        )
+        self.assertEqual(row["type"], reference_type)
 
     # Tests using AppLibrary
     def test_new_reference_using_app_library(self):
         """Test new reference using AppLibrary"""
         app = AppLibrary(self._db_file)
         self.addCleanup(app.close)
-        app.input("1")
+        app.input(self._ref_option_for("Kirja"))
         app.input("Clean Code")
         app.input("Robert C. Martin")
         app.input("2008")
@@ -39,14 +64,25 @@ class TestApp(unittest.TestCase):
 
     # Tests using StubDB
     def test_running_command_new_adds_book_reference(self):
-        self._io.inputs = ["1", "Testikirja", "Testitekijä", "2024", "Testikustantaja"]
+        self._io.inputs = [
+            self._ref_option_for("Kirja"),
+            "Testikirja",
+            "Testitekijä",
+            "2024",
+            "Testikustantaja",
+        ]
         self._app.run(command="new")
-        self.assertEqual(len(self._io.outputs), 2)
         self.assertIn("Viite lisätty", self._io.outputs[-1])
+        self._assert_saved_reference_type("Kirja")
+
+    def test_running_command_new_quits_when_zero_is_selected(self):
+        self._io.inputs = ["0"]
+        with self.assertRaisesRegex(UserQuitException, "Quitting the program."):
+            self._app.run(command="new")
 
     def test_running_command_new_adds_article_referenve(self):
         self._io.inputs = [
-            "2",
+            self._ref_option_for("Artikkeli"),
             "testiartikkeli",
             "Testitekijä",
             "2024",
@@ -55,12 +91,12 @@ class TestApp(unittest.TestCase):
             "45-50",
         ]
         self._app.run(command="new")
-        self.assertEqual(len(self._io.outputs), 2)
         self.assertIn("Viite lisätty", self._io.outputs[-1])
+        self._assert_saved_reference_type("Artikkeli")
 
     def test_running_command_new_adds_webpage_reference(self):
         self._io.inputs = [
-            "3",
+            self._ref_option_for("Verkkosivu"),
             "testisivu",
             "Testitekijä",
             "2024",
@@ -68,24 +104,24 @@ class TestApp(unittest.TestCase):
             "21.20.2021",
         ]
         self._app.run(command="new")
-        self.assertEqual(len(self._io.outputs), 2)
         self.assertIn("Viite lisätty", self._io.outputs[-1])
+        self._assert_saved_reference_type("Verkkosivu")
 
     def test_running_command_new_adds_conference_reference(self):
         self._io.inputs = [
-            "4",
+            self._ref_option_for("Konferenssijulkaisu"),
             "testijulkaisu",
             "Testitekijä",
             "2024",
             "testikonferenssi",
         ]
         self._app.run(command="new")
-        self.assertEqual(len(self._io.outputs), 2)
         self.assertIn("Viite lisätty", self._io.outputs[-1])
+        self._assert_saved_reference_type("Konferenssijulkaisu")
 
     def test_running_command_new_adds_thesis_reference(self):
         self._io.inputs = [
-            "5",
+            self._ref_option_for("Opinnäytetyö tai väitöskirja"),
             "testityö",
             "Testitekijä",
             "2024",
@@ -93,8 +129,8 @@ class TestApp(unittest.TestCase):
             "pro gradu",
         ]
         self._app.run(command="new")
-        self.assertEqual(len(self._io.outputs), 2)
         self.assertIn("Viite lisätty", self._io.outputs[-1])
+        self._assert_saved_reference_type("Opinnäytetyö tai väitöskirja")
 
     def test_running_command_list_writes_references_from_repository(self):
         _reference = SimpleNamespace(
@@ -117,11 +153,17 @@ class TestApp(unittest.TestCase):
         self.assertEqual(self._io.outputs, ["Not implemented: export"])
 
     def test_running_command_new_with_invalid_reference_type(self):
-        self._io.inputs = ["9", "2", "testiartikkeli", "2024", "22", "3", "38-40"]
+        self._io.inputs = [
+            str(len(self._ref_options) + 1),
+            self._ref_option_for("Artikkeli"),
+            "testiartikkeli",
+            "2024",
+            "22",
+            "3",
+            "38-40",
+        ]
         self._app.run(command="new")
-        self.assertIn(
-            "Virheellinen valinta. Valitse 1, 2, 3, 4 tai 5. ", self._io.outputs
-        )
+        self.assertIn(f"Virheellinen valinta.{os.linesep}", self._io.outputs)
 
     def test_running_command_new_saves_book_to_sqlite(self):
         _temp_dir = tempfile.mkdtemp()
@@ -130,7 +172,7 @@ class TestApp(unittest.TestCase):
         _repository = SqliteReferenceRepository(_db_file)
         self.addCleanup(_repository.close)
         self._io.inputs = [
-            "1",
+            self._ref_option_for("Kirja"),
             "Testikirja",
             "Testitekijä",
             "2024",
@@ -140,7 +182,8 @@ class TestApp(unittest.TestCase):
         _app.run(command="new")
         _row = (
             _repository.get_db_connection()
-            .execute('SELECT title FROM "references"')
+            .execute('SELECT title, type FROM "references"')
             .fetchone()
         )
         self.assertEqual(_row["title"], "Testikirja")
+        self.assertEqual(_row["type"], "Kirja")

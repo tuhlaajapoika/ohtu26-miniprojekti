@@ -1,8 +1,9 @@
+import os
 import uuid
-from textwrap import dedent
 
 from refmanager.exceptions import UserQuitException
 from refmanager.models.reference_dto import ReferenceDTO
+from refmanager.models.reference_types import REFERENCE_TYPES
 from refmanager.services.reference_dto_formatter import format_reference_dto
 from refmanager.services.reference_listing import list_references
 
@@ -59,34 +60,27 @@ class ReferenceRunner:
         return ReferenceDTO(ref_id=uuid.uuid7(), ref_type=ref_type, **details)
 
     def _select_reference_type(self):
-        ref_options = {
-            "1": "Kirja",
-            "2": "Artikkeli",
-            "3": "Verkkosivu",
-            "4": "Konferenssijulkaisu",
-            "5": "Opinnäytetyö tai väitöskirja",
+        # Iterate REFERENCE_TYPES
+        _ref_options = {
+            str(number): reference_type
+            for number, reference_type in enumerate(REFERENCE_TYPES.values(), start=1)
         }
 
         while True:
-            # detent: prevent indentation
-            self.io.write(
-                dedent(
-                    """\
-                Valitse lähdetyyppi:
-                1 = Kirja
-                2 = Artikkeli
-                3 = Verkkosivu
-                4 = Konferenssijulkaisu
-                5 = Opinnäytetyö tai väitöskirja
-                """
-                )
-            )
-            choice = self._ask("Valinta: ")
+            self.io.write("Valitse lähdetyyppi:")
+            for option in _ref_options:
+                self.io.write(f"[{option}] {_ref_options.get(option)}")
+            self.io.write("[0] Lopeta")
 
-            if choice in ref_options:
-                return ref_options[choice]
+            choice = self._ask(f"Valinta [0-{len(_ref_options.keys())}]: ")
 
-            self.io.write("Virheellinen valinta. Valitse 1, 2, 3, 4 tai 5. ")
+            if choice == "0":
+                raise UserQuitException("Quitting the program.")
+
+            if choice in _ref_options:
+                return _ref_options[choice]
+
+            self.io.write(f"Virheellinen valinta.{os.linesep}")
 
     def _ask(self, prompt):
         """Read input from the user and quit if the user types 'quit'."""
