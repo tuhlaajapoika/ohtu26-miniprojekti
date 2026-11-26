@@ -40,6 +40,14 @@ def main() -> None:
         parents=[tag_parser],
     )
 
+    # Delete -------------------------------------------------------------------
+    cmdparser.add_parser(
+        "delete",
+        help="Delete an existing reference",
+        description=("Select and delete one or more references"),
+        parents=[tag_parser],
+    )
+
     # List ---------------------------------------------------------------------
     cmdparser.add_parser(
         "list",
