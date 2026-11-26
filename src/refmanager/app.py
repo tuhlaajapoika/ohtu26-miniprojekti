@@ -1,4 +1,4 @@
-from refmanager.services.reference_query import ReferenceRunner
+from refmanager.services.reference_runner import ReferenceRunner
 
 
 class App:
