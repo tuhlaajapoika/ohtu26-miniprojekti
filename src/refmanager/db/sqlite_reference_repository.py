@@ -7,7 +7,7 @@ from refmanager.db.initialize_database import create_tables, table_exists
 from refmanager.db.schema import (
     FIND_ALL_REFERENCES_SQL,
     FIND_REFERENCES_BY_ID_SQL,
-    INSERT_NEW_REFERENCE_SQL,
+    INSERT_OR_REPLACE_REFERENCE_SQL,
 )
 from refmanager.models.reference_dto import ReferenceDTO
 from refmanager.repositories.reference_repository import ReferenceRepository
@@ -70,7 +70,7 @@ class SqliteReferenceRepository(ReferenceRepository):
             ref.ref_id = uuid.uuid7()
 
         cursor = self.conn.execute(
-            INSERT_NEW_REFERENCE_SQL,
+            INSERT_OR_REPLACE_REFERENCE_SQL,
             {
                 "reference_id": str(ref.ref_id),
                 "type": ref.ref_type,

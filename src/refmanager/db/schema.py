@@ -57,7 +57,7 @@ FROM "references" WHERE reference_id = ?;
 # Save new reference to the database.
 # Using named style instead of qmark style.
 # See: https://docs.python.org/3/library/sqlite3.html#how-to-use-placeholders-to-bind-values-in-sql-queries # pylint: disable=line-too-long
-INSERT_NEW_REFERENCE_SQL = f"""
+INSERT_OR_REPLACE_REFERENCE_SQL = f"""
 INSERT OR REPLACE INTO "references" (
     {_REFERENCE_COLUMN_LIST}
 )
