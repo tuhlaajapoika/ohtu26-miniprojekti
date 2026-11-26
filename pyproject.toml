@@ -36,3 +36,5 @@ indent-width = 4
 # Like Black, respect magic trailing commas, default.
 skip-magic-trailing-comma = false
 
+[tool.uv]
+exclude-newer = "1 week"
