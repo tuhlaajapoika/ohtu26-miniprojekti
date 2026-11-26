@@ -7,9 +7,9 @@ from refmanager.models.reference import (
 )
 
 REFERENCE_TYPES = {
-    Article: "Artikkeli",
-    Book: "Kirja",
-    Conference: "Konferenssijulkaisu",
-    Thesis: "Opinnäytetyö tai väitöskirja",
-    Website: "Verkkosivu",
+    Article: Article.reference_type,
+    Book: Book.reference_type,
+    Conference: Conference.reference_type,
+    Thesis: Thesis.reference_type,
+    Website: Website.reference_type,
 }

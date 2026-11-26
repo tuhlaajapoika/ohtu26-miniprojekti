@@ -2,7 +2,7 @@ import unittest
 import uuid
 
 from refmanager.models.reference_dto import ReferenceDTO
-from refmanager.services.reference_formatter import format_reference
+from refmanager.services.reference_dto_formatter import format_reference_dto
 
 
 def make_reference(ref_type, **fields):
@@ -30,8 +30,8 @@ class TestFormatReference(unittest.TestCase):
             publisher="Prentice Hall",
         )
         self.assertEqual(
-            format_reference(reference),
-            "Kirja: Robert C. Martin (2008). Clean Code. Prentice Hall.",
+            format_reference_dto(reference),
+            "[Kirja]: Robert C. Martin. Clean Code. Prentice Hall, 2008",
         )
 
     def test_article_shows_volume_issue_and_pages(self):
@@ -45,15 +45,15 @@ class TestFormatReference(unittest.TestCase):
             pages="38-46",
         )
         self.assertEqual(
-            format_reference(reference),
-            "Artikkeli: Allan Collins (1991). Cognitive apprenticeship. "
-            "vol. 6, no. 11, s. 38-46.",
+            format_reference_dto(reference),
+            "[Artikkeli]: Allan Collins. Cognitive apprenticeship. "
+            "vol. 6, no. 11, s. 38-46, 1991",
         )
 
     def test_article_without_optional_fields_has_no_empty_labels(self):
         reference = make_reference("Artikkeli", title="Short paper", year=2020)
-        formatted = format_reference(reference)
-        self.assertEqual(formatted, "Artikkeli: Author (2020). Short paper.")
+        formatted = format_reference_dto(reference)
+        self.assertEqual(formatted, "[Artikkeli]: Author. Short paper. 2020")
         self.assertNotIn("vol.", formatted)
         self.assertNotIn("no.", formatted)
 
@@ -66,9 +66,9 @@ class TestFormatReference(unittest.TestCase):
             accessed_on="21.11.2026",
         )
         self.assertEqual(
-            format_reference(reference),
-            "Verkkosivu: Python Software Foundation (2026). Python documentation. "
-            "https://docs.python.org, luettu 21.11.2026.",
+            format_reference_dto(reference),
+            "[Verkkosivu]: Python Software Foundation. Python documentation. "
+            "https://docs.python.org, luettu 21.11.2026, 2026",
         )
 
     def test_conference_paper_shows_proceedings(self):
@@ -80,9 +80,9 @@ class TestFormatReference(unittest.TestCase):
             proceedings="Proceedings of XP 2024",
         )
         self.assertEqual(
-            format_reference(reference),
-            "Konferenssijulkaisu: Matti Meikäläinen (2024). Agile in practice. "
-            "Proceedings of XP 2024.",
+            format_reference_dto(reference),
+            "[Konferenssijulkaisu]: Matti Meikäläinen. Agile in practice. "
+            "Proceedings of XP 2024, 2024",
         )
 
     def test_thesis_shows_institution_and_thesis_type(self):
@@ -95,15 +95,27 @@ class TestFormatReference(unittest.TestCase):
             thesis_type="pro gradu",
         )
         self.assertEqual(
-            format_reference(reference),
-            "Opinnäytetyö tai väitöskirja: Maija Virtanen (2025). Viitteiden hallinta. "
-            "Jyväskylän yliopisto, pro gradu.",
+            format_reference_dto(reference),
+            "[Opinnäytetyö tai väitöskirja]: Maija Virtanen. Viitteiden hallinta. "
+            "Jyväskylän yliopisto, pro gradu, 2025",
         )
 
     def test_unknown_type_shows_only_common_fields(self):
         reference = make_reference("Muu", publisher="Ignored Publisher")
-        self.assertEqual(format_reference(reference), "Muu: Author (2026). Title.")
+        self.assertEqual(format_reference_dto(reference), "[Muu]: Author. Title. 2026")
 
     def test_reference_id_is_not_shown(self):
         reference = make_reference("Kirja", publisher="Prentice Hall")
-        self.assertNotIn(str(reference.ref_id), format_reference(reference))
+        self.assertNotIn(str(reference.ref_id), format_reference_dto(reference))
+
+    def test_uses_a_custom_formatter_strategy(self):
+        class CustomFormatter:  # pylint: disable=too-few-public-methods
+            def format(self, reference, type_label=None):
+                return f"{type_label}:{reference.title}"
+
+        reference = make_reference("Kirja", title="Clean Code")
+
+        self.assertEqual(
+            format_reference_dto(reference, formatter=CustomFormatter()),
+            "Kirja:Clean Code",
+        )

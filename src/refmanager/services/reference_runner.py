@@ -3,7 +3,7 @@ from textwrap import dedent
 
 from refmanager.exceptions import UserQuitException
 from refmanager.models.reference_dto import ReferenceDTO
-from refmanager.services.reference_formatter import format_reference
+from refmanager.services.reference_dto_formatter import format_reference_dto
 from refmanager.services.reference_listing import list_references
 
 # Reference type specific fields: (field name, prompt shown to the user)
@@ -45,7 +45,9 @@ class ReferenceRunner:
                 ref_id = self.repository.save(reference)
                 self.io.write(f"Viite lisätty (ID: {ref_id})")
             case "list":
-                list_references(self.repository, self.io, formatter=format_reference)
+                list_references(
+                    self.repository, self.io, formatter=format_reference_dto
+                )
             case "export":
                 self.io.write("Not implemented: export")
             case "quit":

@@ -109,7 +109,7 @@ class TestApp(unittest.TestCase):
         _app = App(ref_repository=_repository, io=self._io)
         _app.run(command="list")
         self.assertEqual(
-            self._io.outputs, ["Kirja: Martin (2008). Clean Code. Prentice Hall."]
+            self._io.outputs, ["[Kirja]: Martin. Clean Code. Prentice Hall, 2008"]
         )
 
     def test_running_command_export_returns_not_implemented(self):

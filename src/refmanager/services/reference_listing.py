@@ -1,5 +1,7 @@
 """Listing of saved references."""
 
+from refmanager.services.reference_dto_formatter import format_reference_dto
+
 NO_REFERENCES_MESSAGE = (
     "Ei tallennettuja viitteitä. Lisää viite komennolla: refmanager new"
 )
@@ -13,12 +15,7 @@ def sort_references(references):
     )
 
 
-def format_reference(ref):
-    """Default one-line presentation of a reference."""
-    return f"[{ref.ref_id}] {ref.author} ({ref.year}): {ref.title}"
-
-
-def list_references(repository, io, formatter=format_reference):
+def list_references(repository, io, formatter=format_reference_dto):
     """Write all references to io in sorted order, one per line.
 
     Writes a message instead if there are no references.

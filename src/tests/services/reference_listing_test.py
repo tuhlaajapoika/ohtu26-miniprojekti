@@ -65,8 +65,8 @@ class TestListReferences(unittest.TestCase):
         self.assertEqual(
             io.outputs,
             [
-                "[2] Collins (1991): Cognitive apprenticeship",
-                "[1] Martin (2008): Clean Code",
+                "[Kirja]: Collins. Cognitive apprenticeship. 1991",
+                "[Kirja]: Martin. Clean Code. 2008",
             ],
         )
 

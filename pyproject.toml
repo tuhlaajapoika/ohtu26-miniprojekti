@@ -5,7 +5,7 @@ build-backend = "uv_build"
 [project]
 name = "refmanager"
 version = "0.1.0"
-description = "Add your description here"
+description = "Manage academic references with ease."
 readme = "README.md"
 #authors = [
 #    { name = "", email = "" }
