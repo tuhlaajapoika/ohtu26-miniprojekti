@@ -6,6 +6,7 @@ from refmanager.models.reference import (
     Article,
     Book,
     Conference,
+    Reference,
     Thesis,
     Website,
 )
@@ -16,6 +17,7 @@ from refmanager.models.reference_types import REFERENCE_TYPES
 class TestReferenceToDTO(unittest.TestCase):
     def test_transform_reference_types_to_dto(self):
         cases = (
+            (Reference, {}),
             (Article, {"volume": "10", "issue": "20", "pages": "300-350"}),
             (Book, {"publisher": "A Great Publisher"}),
             (Conference, {"proceedings": "Proc. USENIX Symp. Networked"}),
