@@ -1,8 +1,17 @@
 # Development notes
 
-Notes about linting, formatting etc.
+Notes about documentation links, linting, formatting etc.
 
-## Coverage
+## Docs
+
+- [BibtexParser](https://bibtexparser.readthedocs.io/en/main/quickstart.html)
+- [Pylint](https://pylint.readthedocs.io/en/stable/)
+- [Python: argparse](https://docs.python.org/3/library/argparse.html)
+- [Ruff](https://docs.astral.sh/ruff/)
+
+## Testing
+
+### Coverage
 
 Run tests and create branch coverage report:
 
@@ -18,11 +27,11 @@ pytest --cov=src --cov-branch --cov-report=html src
 # for both html and xml reports, use: --cov-report=html --cov-report=xml
 ```
 
-### Coverage in VS Code
+#### Coverage in VS Code
 
 Install required vscode [Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python) extension if not installed. "Testing" icon should be visible in the sidepanel, right click and enable if not. Select "Run Tests with Coverage" and UI should show tests' status and coverage, both in the panel and in opened files.
 
-## Ruff
+### Ruff
 
 [Comparing Ruff and Pylint](https://pydevtools.com/handbook/explanation/how-do-ruff-and-pylint-compare/)
 
