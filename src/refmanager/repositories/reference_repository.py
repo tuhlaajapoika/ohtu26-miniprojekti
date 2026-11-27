@@ -25,3 +25,7 @@ class ReferenceRepository(ABC):
     @abstractmethod
     def find_all(self) -> list[ReferenceDTO]:
         """Return all references. Empty list if none"""
+
+    @abstractmethod
+    def delete(self, ref_id: uuid.UUID) -> None:
+        """Delete a reference by id."""

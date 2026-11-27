@@ -54,6 +54,12 @@ SELECT
 FROM "references" WHERE reference_id = ?;
 """
 
+# Delete by ID
+DELETE_REFERENCE_SQL = """
+DELETE FROM "references"
+WHERE reference_id = ?;
+"""
+
 # Save new reference to the database.
 # Using named style instead of qmark style.
 # See: https://docs.python.org/3/library/sqlite3.html#how-to-use-placeholders-to-bind-values-in-sql-queries # pylint: disable=line-too-long

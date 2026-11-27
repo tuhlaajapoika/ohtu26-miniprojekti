@@ -45,6 +45,8 @@ class ReferenceRunner:
                 reference = self.create_reference()
                 ref_id = self.repository.save(reference)
                 self.io.write(f"Viite lisätty (ID: {ref_id})")
+            case "delete":
+                self.delete_reference()
             case "list":
                 list_references(
                     self.repository, self.io, formatter=format_reference_dto
@@ -59,6 +61,59 @@ class ReferenceRunner:
         details = self._collect_reference_details(ref_type)
         return ReferenceDTO(ref_id=uuid.uuid7(), ref_type=ref_type, **details)
 
+    def delete_reference(self):
+        reference = self._select_reference_to_delete()
+
+        if reference is None:
+            return
+
+        self._when_deleting_reference(reference)
+
+    def _select_reference_to_delete(self):
+
+        references = self.repository.find_all()
+
+        if not references:
+            self.io.write("Ei viitteitä lisätty.")
+            return None
+
+        _ref_options = {
+            str(number): reference
+            for number, reference in enumerate(references, start=1)
+        }
+
+        while True:
+            self.io.write("Valitse poistettava viite:")
+            self.io.write("[0] Lopeta")
+            for option, reference in _ref_options.items():
+                self.io.write(f"[{option}] {format_reference_dto(reference)}")
+
+            choice = self._ask(f"Valinta [0-{len(_ref_options)}]: ")
+
+            if choice == "0":
+                raise UserQuitException("Quitting the program.")
+
+            if choice in _ref_options:
+                return _ref_options[choice]
+
+            self.io.write(f"Virheellinen valinta.{os.linesep}")
+
+    def _when_deleting_reference(self, reference):
+        self.io.write(
+            "Oletko varma, että haluat poistaa tämän viitteen? Muutokse ovat pysyviä."
+        )
+        self.io.write(format_reference_dto(reference))
+
+        choice = self._ask("Poistetaanko viite [k/e]: ")
+
+        if choice.lower() == "k":
+            self.repository.delete(reference.ref_id)
+            self.io.write("Viite poistettu.")
+        elif choice.lower() == "e":
+            self.io.write("Poistaminen peruutettu.")
+        else:
+            self.io.write("Virheellinen valinta.")
+
     def _select_reference_type(self):
         # Iterate REFERENCE_TYPES
         _ref_options = {
@@ -68,9 +123,9 @@ class ReferenceRunner:
 
         while True:
             self.io.write("Valitse lähdetyyppi:")
+            self.io.write("[0] Lopeta")
             for option in _ref_options:
                 self.io.write(f"[{option}] {_ref_options.get(option)}")
-            self.io.write("[0] Lopeta")
 
             choice = self._ask(f"Valinta [0-{len(_ref_options.keys())}]: ")
 

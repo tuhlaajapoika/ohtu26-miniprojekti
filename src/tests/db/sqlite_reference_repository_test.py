@@ -81,3 +81,39 @@ class TestSqliteReferenceRepository(unittest.TestCase):
         self._repository.save(first)
         self._repository.save(second)
         self.assertCountEqual(self._repository.find_all(), [first, second])
+
+    def test_delete_removes_reference_by_id(self):
+        ref_id = uuid.uuid7()
+        reference = ReferenceDTO(
+            ref_id,
+            "article",
+            "Testing SQLite",
+            "Esimerkki Erkki",
+            2026,
+            "",
+        )
+        other_reference = ReferenceDTO(
+            uuid.uuid7(),
+            "book",
+            "Clean Code",
+            "Robert C. Martin",
+            2008,
+            "Prentice Hall",
+        )
+
+        self._repository.save(reference)
+        self._repository.save(other_reference)
+
+        self._repository.delete(ref_id)
+
+        self.assertIsNone(self._repository.find_by_id(ref_id))
+        self.assertEqual(
+            self._repository.find_by_id(other_reference.ref_id),
+            other_reference,
+        )
+
+    def test_delete_raises_error_when_reference_does_no_exist(self):
+        ref_id = uuid.uuid7()
+
+        with self.assertRaises(RuntimeError):
+            self._repository.delete(ref_id)

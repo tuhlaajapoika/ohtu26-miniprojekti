@@ -5,6 +5,7 @@ from pathlib import Path
 from refmanager.config import PROJECT_ROOT
 from refmanager.db.initialize_database import create_tables, table_exists
 from refmanager.db.schema import (
+    DELETE_REFERENCE_SQL,
     FIND_ALL_REFERENCES_SQL,
     FIND_REFERENCES_BY_ID_SQL,
     INSERT_OR_REPLACE_REFERENCE_SQL,
@@ -121,3 +122,13 @@ class SqliteReferenceRepository(ReferenceRepository):
             )
             for row in rows
         ]
+
+    def delete(self, ref_id: uuid.UUID) -> None:
+        cursor = self.conn.execute(
+            DELETE_REFERENCE_SQL,
+            (str(ref_id),),
+        )
+
+        if cursor.rowcount != 1:
+            raise RuntimeError(f"(database) Reference was not deleted: {ref_id}")
+        self.conn.commit()
