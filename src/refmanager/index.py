@@ -57,11 +57,17 @@ def main() -> None:
     )
 
     # Export -------------------------------------------------------------------
-    cmdparser.add_parser(
+    export_parser = cmdparser.add_parser(
         "export",
         help="Export references to BibTex format",
         description="Export references to a .bib file in BibTex format",
         parents=[tag_parser],
+    )
+    export_parser.add_argument(
+        "-o",
+        "--output",
+        default="references.bib",
+        help="Output file path (default: references.bib)",
     )
 
     # Quit ---------------------------------------------------------------------
@@ -80,7 +86,10 @@ def main() -> None:
         sqlite_repository = SqliteReferenceRepository(db_file=DATABASE_FILE)
         app = App(ref_repository=sqlite_repository, io=console_io)
         try:
-            app.run(command=args.command)
+            if args.command == "export":
+                app.run(command=args.command, export_path=args.output)
+            else:
+                app.run(command=args.command)
         finally:
             # quit gracefully, commit changes to the database.
             app.quit()
@@ -91,6 +100,9 @@ def main() -> None:
         console_io.write(f"{message}")
         sys.exit(0)
     except RuntimeError as e:
+        console_io.write(f"ERROR: {e}")
+        sys.exit(1)
+    except OSError as e:
         console_io.write(f"ERROR: {e}")
         sys.exit(1)
     except sqlite3.OperationalError as e:

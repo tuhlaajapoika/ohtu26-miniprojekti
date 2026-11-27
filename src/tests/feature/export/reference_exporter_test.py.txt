@@ -1,0 +1,122 @@
+import unittest
+import uuid
+from io import StringIO
+
+import bibtexparser
+from bibtexparser import entrypoint
+
+from refmanager.feature.export.reference_exporter import BibtexReferenceExporter
+from refmanager.models.reference_dto import ReferenceDTO
+from refmanager.services.reference_export_service import ReferenceExportService
+
+
+def make_reference(ref_type="article", **fields):
+    values = {
+        "ref_id": uuid.uuid7(),
+        "ref_type": ref_type,
+        "title": "A study of references",
+        "author": "Alex Example",
+        "year": 2025,
+    }
+    values.update(fields)
+    return ReferenceDTO(**values)
+
+
+class FakeRepository:  # pylint: disable=too-few-public-methods
+    def __init__(self, references):
+        self.references = references
+
+    def find_all(self):
+        return list(self.references)
+
+
+class TestBibtexReferenceExporter(unittest.TestCase):
+    def setUp(self):
+        self.exporter = BibtexReferenceExporter()
+
+    def test_maps_article_fields_to_bibtex_fields(self):
+        reference = make_reference(
+            journal="Journal of Examples",
+            volume="12",
+            issue="3",
+            pages="45-67",
+        )
+
+        entry = self.exporter.to_entry(reference)
+
+        self.assertEqual(entry.entry_type, "article")
+        self.assertEqual(entry.key, f"ref_{reference.ref_id.hex}")
+        self.assertEqual(
+            {key: field.value for key, field in entry.fields_dict.items()},
+            {
+                "author": "Alex Example",
+                "title": "A study of references",
+                "year": "2025",
+                "journal": "Journal of Examples",
+                "volume": "12",
+                "number": "3",
+                "pages": "45-67",
+            },
+        )
+
+    def test_omits_empty_optional_fields(self):
+        entry = self.exporter.to_entry(make_reference())
+
+        self.assertEqual(
+            set(entry.fields_dict),
+            {"author", "title", "year"},
+        )
+
+    def test_serializes_library_as_valid_bibtex(self):
+        reference = make_reference()
+        destination = StringIO()
+
+        self.exporter.export([reference], destination)
+
+        library = entrypoint.parse_string(destination.getvalue())
+        self.assertEqual(len(library.entries), 1)
+        self.assertEqual(library.entries[0].entry_type, "article")
+        self.assertEqual(library.entries[0].key, f"ref_{reference.ref_id.hex}")
+        self.assertEqual(
+            library.entries[0].fields_dict["title"].value,
+            "A study of references",
+        )
+
+    def test_rejects_non_article_types(self):
+        with self.assertRaisesRegex(ValueError, "does not support type: book"):
+            self.exporter.to_entry(make_reference(ref_type="book"))
+
+    def test_rejects_unsaved_references_without_ids(self):
+        with self.assertRaisesRegex(ValueError, "without a saved reference id"):
+            self.exporter.to_entry(make_reference(ref_id=None))
+
+
+class TestReferenceExportService(unittest.TestCase):
+    def test_selects_articles_before_export(self):
+        article = make_reference()
+        book = make_reference(ref_type="book")
+        destination = StringIO()
+        service = ReferenceExportService(
+            FakeRepository([article, book]),
+            BibtexReferenceExporter(),
+        )
+
+        count = service.export_by_type("article", destination)
+
+        self.assertEqual(count, 1)
+        library = entrypoint.parse_string(destination.getvalue())
+        self.assertEqual(
+            [entry.key for entry in library.entries],
+            [
+                f"ref_{article.ref_id.hex}",
+            ],
+        )
+
+    def test_rejects_unimplemented_types(self):
+        service = ReferenceExportService(
+            FakeRepository([make_reference(ref_type="book")]),
+            BibtexReferenceExporter(),
+        )
+
+        with self.assertRaisesRegex(NotImplementedError, "type: book"):
+            service.export_by_type("book", StringIO())

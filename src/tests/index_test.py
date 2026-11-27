@@ -35,7 +35,13 @@ class TestIndex(unittest.TestCase):
                     ref_repository=repository,
                     io=console_io,
                 )
-                app.run.assert_called_once_with(command=command)
+                if command == "export":
+                    app.run.assert_called_once_with(
+                        command=command,
+                        export_path="references.bib",
+                    )
+                else:
+                    app.run.assert_called_once_with(command=command)
 
     def test_tags_argument_is_a_list(self):
         command = "new"

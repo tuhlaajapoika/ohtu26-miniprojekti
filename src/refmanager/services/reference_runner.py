@@ -1,5 +1,6 @@
 import os
 import uuid
+from pathlib import Path
 
 from refmanager.exceptions import UserQuitException
 from refmanager.models.reference_dto import ReferenceDTO
@@ -38,8 +39,12 @@ class ReferenceRunner:
     def __init__(self, repository, io):
         self.repository = repository
         self.io = io
+        # WIP: export, not yet in use
+        # self.export_service = ReferenceExportService(
+        #    repository, BibtexReferenceExporter()
+        # )
 
-    def run(self, command):
+    def run(self, command, export_path: str | Path = "references.bib"):
         match command:
             case "new":
                 reference = self.create_reference()
@@ -52,7 +57,7 @@ class ReferenceRunner:
                     self.repository, self.io, formatter=format_reference_dto
                 )
             case "export":
-                self.io.write("Not implemented: export")
+                self.export_references(export_path)
             case "quit":
                 raise UserQuitException("Quitting the program.")
 
@@ -68,6 +73,17 @@ class ReferenceRunner:
             return
 
         self._when_deleting_reference(reference)
+
+    def export_references(self, export_path: str | Path = "references.bib"):
+        """Export article references to a BibTeX file."""
+        # WIP: export, not yet in use
+        # path = Path(export_path)
+        # with path.open("w", encoding="utf-8") as destination:
+        #    count = self.export_service.export_by_type(
+        #        Article.reference_type, destination
+        #    )
+        # self.io.write(f"Artikkeliviitteet viety tiedostoon {path} ({count} kpl).")
+        self.io.write(f"Not implemented: export -o {export_path}")
 
     def _select_reference_to_delete(self):
 

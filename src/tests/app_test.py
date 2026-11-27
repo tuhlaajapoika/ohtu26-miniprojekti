@@ -149,8 +149,10 @@ class TestApp(unittest.TestCase):
         )
 
     def test_running_command_export_returns_not_implemented(self):
-        self._app.run(command="export")
-        self.assertEqual(self._io.outputs, ["Not implemented: export"])
+        self._app.run(command="export", export_path="test_references.bib")
+        self.assertEqual(
+            self._io.outputs, ["Not implemented: export -o test_references.bib"]
+        )
 
     def test_running_command_new_with_invalid_reference_type(self):
         self._io.inputs = [
@@ -187,3 +189,31 @@ class TestApp(unittest.TestCase):
         )
         self.assertEqual(_row["title"], "Testikirja")
         self.assertEqual(_row["type"], "Kirja")
+
+    # def test_export_command_writes_only_articles_to_a_bib_file(self):
+    #    self._repository.save(
+    #        ReferenceDTO(
+    #            ref_id=uuid.uuid7(),
+    #            ref_type="article",
+    #            title="An article",
+    #            author="A. Author",
+    #            year=2025,
+    #        )
+    #    )
+    #    self._repository.save(
+    #        ReferenceDTO(
+    #            ref_id=uuid.uuid7(),
+    #            ref_type="book",
+    #            title="A book",
+    #            author="B. Author",
+    #            year=2024,
+    #        )
+    #    )
+    #    output_path = os.path.join(self._temp_dir, "articles.bib")
+    #    self._app.run(command="export", export_path=output_path)
+    #    with open(output_path, encoding="utf-8") as exported_file:
+    #        bibtex = exported_file.read()
+    #    self.assertIn("@article", bibtex)
+    #    self.assertIn("An article", bibtex)
+    #    self.assertNotIn("A book", bibtex)
+    #    self.assertIn("Artikkeliviitteet viety tiedostoon", self._io.outputs[-1])

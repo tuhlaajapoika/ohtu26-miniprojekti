@@ -9,14 +9,13 @@ class App:
         self.io = io
         self.runner = ReferenceRunner(ref_repository, io)
 
-    def run(self, command):
-        """Starts service runner
-
-        Args:
-            command (dynamic attribute): command passed into the program by the user
-        """
-        self.runner.run(command)
+    def run(self, command, export_path=None):
+        """Starts the service"""
+        if export_path is None:
+            self.runner.run(command)
+        else:
+            self.runner.run(command, export_path=export_path)
 
     def quit(self):
-        """Closes the repository"""
+        """Prepares the program for graceful exit"""
         self.repository.close()
