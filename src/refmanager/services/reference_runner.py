@@ -100,7 +100,7 @@ class ReferenceRunner:
 
     def _when_deleting_reference(self, reference):
         self.io.write(
-            "Oletko varma, että haluat poistaa tämän viitteen? Muutokse ovat pysyviä."
+            "Oletko varma, että haluat poistaa tämän viitteen? Muutokset ovat pysyviä."
         )
         self.io.write(format_reference_dto(reference))
 
