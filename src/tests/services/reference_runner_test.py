@@ -30,13 +30,14 @@ class FakeIO:
         self.inputs = list(inputs)
         self.outputs = []
 
-    def read(self, promt):
+    def read(self, prompt):
+        del prompt
         return self.inputs.pop(0)
 
     def write(self, text):
         self.outputs.append(text)
 
-
+# pylint: disable=duplicate-code
 def make_ref(ref_id, title="Test reference"):
     return ReferenceDTO(
         ref_id=ref_id,
@@ -71,15 +72,15 @@ class TestDeleteReference(unittest.TestCase):
         self.assertIn("Viite poistettu.", io.outputs)
 
     def test_does_not_delete_reference_when_cancelled(self):
-        Reference = make_ref(uuid.uuid7())
-        repository = FakeRepository([Reference])
+        reference = make_ref(uuid.uuid7())
+        repository = FakeRepository([reference])
         io = FakeIO(["1", "e"])
         runner = ReferenceRunner(repository, io)
 
         runner.delete_reference()
 
         self.assertEqual(repository.delete_ids, [])
-        self.assertEqual(repository.references, [Reference])
+        self.assertEqual(repository.references, [reference])
         self.assertIn("Poistaminen peruutettu.", io.outputs)
 
     def test_empty_repository_does_not_ask_for_selection(self):
