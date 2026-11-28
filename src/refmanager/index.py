@@ -89,7 +89,7 @@ def main() -> None:
             if args.command == "export":
                 app.run(command=args.command, export_path=args.output)
             else:
-                app.run(command=args.command)
+                app.run(command=args.command, tags=getattr(args, "tag", None))
         finally:
             # quit gracefully, commit changes to the database.
             app.quit()
