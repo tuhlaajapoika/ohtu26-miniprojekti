@@ -21,3 +21,4 @@ class ReferenceDTO:  # pylint: disable=too-many-instance-attributes
     proceedings: str = ""
     institution: str = ""
     thesis_type: str = ""
+    tags: str = ""

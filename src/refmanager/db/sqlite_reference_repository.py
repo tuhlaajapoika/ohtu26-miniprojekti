@@ -63,6 +63,7 @@ class SqliteReferenceRepository(ReferenceRepository):
                 proceedings=row["proceedings"],
                 institution=row["institution"],
                 thesis_type=row["thesis_type"],
+                tags=row["tags"],
             )
         return None
 
@@ -88,6 +89,7 @@ class SqliteReferenceRepository(ReferenceRepository):
                 "proceedings": ref.proceedings,
                 "institution": ref.institution,
                 "thesis_type": ref.thesis_type,
+                "tags": ref.tags,
             },
         )
 
@@ -119,6 +121,7 @@ class SqliteReferenceRepository(ReferenceRepository):
                 proceedings=row["proceedings"],
                 institution=row["institution"],
                 thesis_type=row["thesis_type"],
+                tags=row["tags"],
             )
             for row in rows
         ]

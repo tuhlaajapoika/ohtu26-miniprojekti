@@ -13,6 +13,7 @@ class Reference:
     title: str
     author: str
     year: int
+    tags: str = ""
 
     reference_type: ClassVar[str] = "Muu"
 

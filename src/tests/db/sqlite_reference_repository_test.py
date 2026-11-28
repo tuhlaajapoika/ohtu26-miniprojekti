@@ -117,3 +117,19 @@ class TestSqliteReferenceRepository(unittest.TestCase):
 
         with self.assertRaises(RuntimeError):
             self._repository.delete(ref_id)
+
+    def test_tags_are_saved_and_loaded(self):
+        ref_id = uuid.uuid7()
+        reference = ReferenceDTO(
+            ref_id,
+            "book",
+            "Clean Code",
+            "Robert C. Martin",
+            2008,
+            "Prentice Hall",
+            tags="koodi,ohjelmointi",
+        )
+        self._repository.save(reference)
+        found = self._repository.find_by_id(ref_id)
+        assert found is not None
+        self.assertEqual(found.tags, "koodi,ohjelmointi")
