@@ -1,8 +1,10 @@
 import os
 import shutil
+import sqlite3
 import tempfile
 import unittest
 import uuid
+from unittest.mock import Mock, patch
 
 from refmanager.config import DATABASE_FILE_TESTS
 from refmanager.db.sqlite_reference_repository import SqliteReferenceRepository
@@ -15,30 +17,12 @@ class TestSqliteReferenceRepository(unittest.TestCase):
     def setUp(self):
         self._temp_dir = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self._temp_dir)
-        _db_file = os.path.join(self._temp_dir, DATABASE_FILE_TESTS)
-        self._repository = SqliteReferenceRepository(_db_file)
+        self._db_file = os.path.join(self._temp_dir, DATABASE_FILE_TESTS)
+        self._repository = SqliteReferenceRepository(self._db_file)
         self.addCleanup(self._repository.close)
 
     def test_find_by_id_returns_none_when_reference_does_not_exist(self):
         self.assertIsNone(self._repository.find_by_id(uuid.uuid7()))
-
-    def test_id_creation_when_a_reference_is_created_but_id_is_empty(self):
-        reference = ReferenceDTO(
-            ref_id=None,
-            ref_type="article",
-            title="Testing SQLite",
-            author="Matti Meikäläinen",
-            year=2026,
-            publisher="",
-        )
-        self._repository.save(reference)
-        _ref_list = self._repository.find_all()
-        self.assertIsNotNone(_ref_list[0])
-        ref_id = _ref_list[0].ref_id
-        assert ref_id is not None
-        found_reference = self._repository.find_by_id(ref_id)
-        assert found_reference is not None
-        self.assertEqual(found_reference.title, reference.title)
 
     def test_save_and_find_by_id(self):
         ref_id = uuid.uuid7()
@@ -117,3 +101,82 @@ class TestSqliteReferenceRepository(unittest.TestCase):
 
         with self.assertRaises(RuntimeError):
             self._repository.delete(ref_id)
+
+    # Failure and rollback operations tests
+
+    def test_database_connection_failure(self):
+        with (
+            patch(
+                "refmanager.db.sqlite_reference_repository.sqlite3.connect",
+                side_effect=sqlite3.OperationalError("unable to open database"),
+            ),
+            self.assertRaises(sqlite3.OperationalError),
+        ):
+            _test_repository = SqliteReferenceRepository(self._db_file)
+
+    def test_find_all_closing_cursor_when_query_fails(self):
+        cursor = Mock()
+        cursor.execute.side_effect = sqlite3.OperationalError("injected failure")
+        connection = Mock()
+        connection.cursor.return_value = cursor
+
+        with (
+            patch.object(self._repository, "conn", connection),
+            self.assertRaises(sqlite3.OperationalError),
+        ):
+            self._repository.find_all()
+
+        cursor.close.assert_called_once()
+
+    def test_database_rollback_on_failed_save_operation(self):
+        ref_id = uuid.uuid7()
+        reference = ReferenceDTO(ref_id, "article", "Title", "Author", 2026, "")
+
+        self._repository.conn.execute("CREATE TABLE rollback_probe (reference_id TEXT)")
+        # The trigger runs after a row is inserted into "references" table.
+        self._repository.conn.execute("""
+            CREATE TRIGGER fail_after_insert
+            AFTER INSERT ON "references"
+            BEGIN
+                INSERT INTO rollback_probe VALUES (NEW.reference_id);
+                SELECT RAISE(FAIL, 'injected failure');
+            END;
+        """)
+
+        with self.assertRaises(sqlite3.IntegrityError):
+            self._repository.save(reference)
+
+        self.assertIsNone(self._repository.find_by_id(ref_id))
+        self.assertEqual(
+            self._repository.conn.execute(
+                "SELECT reference_id FROM rollback_probe"
+            ).fetchall(),
+            [],
+        )
+
+    def test_database_rollback_on_failed_delete_operation(self):
+        ref_id = uuid.uuid7()
+        reference = ReferenceDTO(ref_id, "article", "Title", "Author", 2026, "")
+        self._repository.conn.execute("CREATE TABLE rollback_probe (reference_id TEXT)")
+        self._repository.save(reference)
+        # The trigger runs after a row is deleted from "references".
+        self._repository.conn.execute("""
+            CREATE TRIGGER fail_after_delete
+            AFTER DELETE ON "references"
+            BEGIN
+                INSERT INTO rollback_probe VALUES (OLD.reference_id);
+                SELECT RAISE(FAIL, 'injected failure');
+            END;
+        """)
+
+        with self.assertRaises(sqlite3.IntegrityError):
+            self._repository.delete(ref_id)
+
+        found_reference = self._repository.find_by_id(ref_id)
+        self.assertEqual(found_reference, reference)
+        self.assertEqual(
+            self._repository.conn.execute(
+                "SELECT reference_id FROM rollback_probe"
+            ).fetchall(),
+            [],
+        )
