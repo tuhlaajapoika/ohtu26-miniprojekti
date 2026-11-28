@@ -133,3 +133,36 @@ class TestDeleteReference(unittest.TestCase):
 
         self.assertEqual(repository.delete_ids, [])
         self.assertIn("Virheellinen valinta.", io.outputs)
+
+class TestCreateReferenceTags(unittest.TestCase):
+    def test_tags_from_form_are_normalized(self):
+        io = FakeIO(
+            [
+                "2",
+                "Clean Code",
+                "Robert C. Martin",
+                "2008",
+                "Prentice Hall",
+                " koodi, ohjelmointi ,, ",
+            ]
+        )
+        runner = ReferenceRunner(FakeRepository([]), io)
+
+        self.assertEqual(runner.create_reference().tags, "koodi,ohjelmointi")
+
+    def test_tags_can_be_left_empty(self):
+        io = FakeIO(
+            ["2", "Clean Code", "Robert C. Martin", "2008", "Prentice Hall", ""]
+        )
+        runner = ReferenceRunner(FakeRepository([]), io)
+
+        self.assertEqual(runner.create_reference().tags, "")
+
+    def test_tag_argument_skips_the_tag_question(self):
+        io = FakeIO(["2", "Clean Code", "Robert C. Martin", "2008", "Prentice Hall"])
+        runner = ReferenceRunner(FakeRepository([]), io)
+
+        reference = runner.create_reference(tags=["koodi", "ohjelmointi"])
+
+        self.assertEqual(reference.tags, "koodi,ohjelmointi")
+        self.assertEqual(io.inputs, [])

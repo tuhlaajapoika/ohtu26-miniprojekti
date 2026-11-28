@@ -140,6 +140,7 @@ class TestApp(unittest.TestCase):
             year=2008,
             title="Clean Code",
             publisher="Prentice Hall",
+            tags="",
         )
         _repository = SimpleNamespace(find_all=lambda: [_reference])
         _app = App(ref_repository=_repository, io=self._io)

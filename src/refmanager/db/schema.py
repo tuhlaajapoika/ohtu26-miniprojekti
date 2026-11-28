@@ -15,6 +15,7 @@ _REFERENCE_COLUMNS = (
     "proceedings",
     "institution",
     "thesis_type",
+    "tags",
 )
 _REFERENCE_COLUMN_LIST = ",\n    ".join(_REFERENCE_COLUMNS)
 
@@ -36,7 +37,8 @@ CREATE TABLE IF NOT EXISTS "references" (
     accessed_on TEXT,
     proceedings TEXT,
     institution TEXT,
-    thesis_type TEXT
+    thesis_type TEXT,
+    tags TEXT
 );
 """
 
@@ -82,6 +84,7 @@ VALUES (
     :accessed_on,
     :proceedings,
     :institution,
-    :thesis_type
+    :thesis_type,
+    :tags
 );
 """

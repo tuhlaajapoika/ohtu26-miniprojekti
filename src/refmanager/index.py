@@ -89,7 +89,7 @@ def main() -> None:
             if args.command == "export":
                 app.run(command=args.command, export_path=args.output)
             else:
-                app.run(command=args.command)
+                app.run(command=args.command, tags=getattr(args, "tag", None))
     except KeyboardInterrupt:
         console_io.write(f"{os.linesep}User interrupt captured.")
         sys.exit(130)

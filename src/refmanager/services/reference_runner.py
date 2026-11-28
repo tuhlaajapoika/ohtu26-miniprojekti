@@ -34,6 +34,12 @@ EXTRA_FIELDS = {
     ],
 }
 
+def normalize_tags(raw: str | list[str]) -> str:
+    """Turn '--tag a b' or ' a, b ,, ' into 'a,b'."""
+    items = [raw] if isinstance(raw, str) else raw
+    tags = [part.strip() for item in items for part in item.split(",")]
+    return ",".join(tag for tag in tags if tag)
+
 
 class ReferenceRunner:
     def __init__(self, repository, io):
@@ -44,10 +50,10 @@ class ReferenceRunner:
         #    repository, BibtexReferenceExporter()
         # )
 
-    def run(self, command, export_path: str | Path = "references.bib"):
+    def run(self, command, export_path: str | Path = "references.bib", tags=None):
         match command:
             case "new":
-                reference = self.create_reference()
+                reference = self.create_reference(tags)
                 ref_id = self.repository.save(reference)
                 self.io.write(f"Viite lisätty (ID: {ref_id})")
             case "delete":
@@ -61,9 +67,9 @@ class ReferenceRunner:
             case "quit":
                 raise UserQuitException("Quitting the program.")
 
-    def create_reference(self):
+    def create_reference(self, tags=None):
         ref_type = self._select_reference_type()
-        details = self._collect_reference_details(ref_type)
+        details = self._collect_reference_details(ref_type, tags)
         return ReferenceDTO(ref_id=uuid.uuid7(), ref_type=ref_type, **details)
 
     def delete_reference(self):
@@ -160,7 +166,7 @@ class ReferenceRunner:
             raise UserQuitException("Quitting the program.")
         return value
 
-    def _collect_reference_details(self, ref_type):
+    def _collect_reference_details(self, ref_type, tags=None):
         title = self._ask("Nimi: ")
         author = self._ask("Tekijä(t): ")
         year_input = self._ask("Vuosi: ")
@@ -183,5 +189,10 @@ class ReferenceRunner:
 
         for field, prompt in EXTRA_FIELDS.get(ref_type, []):
             details[field] = self._ask(prompt)
+
+        # Ask for tags in the form only if --tag was not given.
+        if tags is None:
+            tags = self._ask("Tagit (erota pilkulla, voit jättää tyhjäksi): ")
+        details["tags"] = normalize_tags(tags)
 
         return details

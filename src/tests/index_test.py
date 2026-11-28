@@ -42,7 +42,7 @@ class TestIndex(unittest.TestCase):
                         export_path="references.bib",
                     )
                 else:
-                    app.run.assert_called_once_with(command=command)
+                    app.run.assert_called_once_with(command=command, tags=None)
 
     def test_tags_argument_is_a_list(self):
         command = "new"

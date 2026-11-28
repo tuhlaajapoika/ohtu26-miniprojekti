@@ -9,9 +9,9 @@ class App:  # pylint: disable=too-few-public-methods
         self.io = io
         self.runner = ReferenceRunner(ref_repository, io)
 
-    def run(self, command, export_path=None):
+    def run(self, command, export_path=None, tags=None):
         """Starts the service"""
         if export_path is None:
-            self.runner.run(command)
+            self.runner.run(command, tags=tags)
         else:
             self.runner.run(command, export_path=export_path)
