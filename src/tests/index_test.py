@@ -5,7 +5,7 @@ import sys
 import unittest
 from contextlib import redirect_stdout
 from io import StringIO
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 from refmanager import index
 from refmanager.exceptions import UserQuitException
@@ -16,7 +16,8 @@ class TestIndex(unittest.TestCase):
         for command in ("new", "list", "export"):
             with self.subTest(command=command):
                 console_io = Mock()
-                repository = Mock()
+                repository = MagicMock()
+                repository.__enter__.return_value = repository
                 app = Mock()
 
                 with (
@@ -56,7 +57,8 @@ class TestIndex(unittest.TestCase):
             return result
 
         console_io = Mock()
-        repository = Mock()
+        repository = MagicMock()
+        repository.__enter__.return_value = repository
         app = Mock()
 
         with (
@@ -101,7 +103,8 @@ class TestIndex(unittest.TestCase):
 
     def test_main_closes_database_and_exits_on_keyboard_interrupt(self):
         console_io = Mock()
-        repository = Mock()
+        repository = MagicMock()
+        repository.__enter__.return_value = repository
         app = Mock()
         app.run.side_effect = KeyboardInterrupt
 
@@ -120,12 +123,13 @@ class TestIndex(unittest.TestCase):
         console_io.write.assert_called_once_with(
             f"{os.linesep}User interrupt captured."
         )
-        app.quit.assert_called_once()
+        repository.__exit__.assert_called_once()
         exit_mock.assert_called_once_with(130)
 
     def test_main_closes_database_and_exits_on_user_quit(self):
         console_io = Mock()
-        repository = Mock()
+        repository = MagicMock()
+        repository.__enter__.return_value = repository
         app = Mock()
         app.run.side_effect = UserQuitException("Quitting the program.")
 
@@ -141,12 +145,13 @@ class TestIndex(unittest.TestCase):
         ):
             index.main()
         console_io.write.assert_called_once_with("Quitting the program.")
-        app.quit.assert_called_once()
+        repository.__exit__.assert_called_once()
         exit_mock.assert_called_once_with(0)
 
     def test_main_runtime_error(self):
         console_io = Mock()
-        repository = Mock()
+        repository = MagicMock()
+        repository.__enter__.return_value = repository
         app = Mock()
         app.run.side_effect = RuntimeError("test RuntimeError")
 
@@ -167,9 +172,10 @@ class TestIndex(unittest.TestCase):
 
     def test_main_sqlite_error(self):
         console_io = Mock()
-        repository = Mock()
+        repository = MagicMock()
+        repository.__enter__.return_value = repository
         app = Mock()
-        app.run.side_effect = sqlite3.OperationalError("test OperationalError")
+        app.run.side_effect = sqlite3.IntegrityError("test IntegrityError")
 
         with (
             patch.object(sys, "argv", ["refmanager", "list"]),
@@ -183,5 +189,5 @@ class TestIndex(unittest.TestCase):
         ):
             index.main()
 
-        console_io.write.assert_called_once_with("ERROR: test OperationalError")
+        console_io.write.assert_called_once_with("ERROR: test IntegrityError")
         exit_mock.assert_called_once_with(1)

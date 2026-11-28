@@ -31,107 +31,127 @@ class SqliteReferenceRepository(ReferenceRepository):
         # initialize_database(self.conn)
 
         if not table_exists(self.conn):
-            raise sqlite3.OperationalError(
+            raise sqlite3.IntegrityError(
                 "(database) 'references' table does not exist."
             )
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
 
     def get_db_connection(self):
         return self.conn
 
     def close(self):
-        """Commit and close the database connection."""
-        self.conn.commit()
+        """Close the database connection."""
         self.conn.close()
 
     def find_by_id(self, ref_id: uuid.UUID) -> ReferenceDTO | None:
-        cursor = self.conn.execute(FIND_REFERENCES_BY_ID_SQL, (str(ref_id),))
-        row = cursor.fetchone()
-        if row is not None:
-            return ReferenceDTO(
-                ref_id=uuid.UUID(row["reference_id"]),
-                ref_type=row["type"],
-                title=row["title"],
-                author=row["author"],
-                year=row["year"],
-                publisher=row["publisher"],
-                journal=row["journal"],
-                volume=row["volume"],
-                issue=row["issue"],
-                pages=row["pages"],
-                url=row["url"],
-                accessed_on=row["accessed_on"],
-                proceedings=row["proceedings"],
-                institution=row["institution"],
-                thesis_type=row["thesis_type"],
-                tags=row["tags"],
-            )
-        return None
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute(FIND_REFERENCES_BY_ID_SQL, (str(ref_id),))
+            row = cursor.fetchone()
+            if row is not None:
+                return ReferenceDTO(
+                    ref_id=uuid.UUID(row["reference_id"]),
+                    ref_type=row["type"],
+                    title=row["title"],
+                    author=row["author"],
+                    year=row["year"],
+                    publisher=row["publisher"],
+                    journal=row["journal"],
+                    volume=row["volume"],
+                    issue=row["issue"],
+                    pages=row["pages"],
+                    url=row["url"],
+                    accessed_on=row["accessed_on"],
+                    proceedings=row["proceedings"],
+                    institution=row["institution"],
+                    thesis_type=row["thesis_type"],
+                    tags=row["tags"],
+                )
+            return None
+        finally:
+            cursor.close()
 
     def save(self, ref: ReferenceDTO) -> uuid.UUID:
-        if ref.ref_id is None:
-            ref.ref_id = uuid.uuid7()
-
-        cursor = self.conn.execute(
-            INSERT_OR_REPLACE_REFERENCE_SQL,
-            {
-                "reference_id": str(ref.ref_id),
-                "type": ref.ref_type,
-                "title": ref.title,
-                "author": ref.author,
-                "year": ref.year,
-                "publisher": ref.publisher,
-                "journal": ref.journal,
-                "volume": ref.volume,
-                "issue": ref.issue,
-                "pages": ref.pages,
-                "url": ref.url,
-                "accessed_on": ref.accessed_on,
-                "proceedings": ref.proceedings,
-                "institution": ref.institution,
-                "thesis_type": ref.thesis_type,
-                "tags": ref.tags,
-            },
-        )
-
-        # Only checks if INSERT was succesful.
-        if cursor.rowcount != 1:
-            raise RuntimeError(
-                f"(database) Reference was not saved: {ref.ref_id}, {ref.title}"
-            )
-        self.conn.commit()
-        return ref.ref_id
+        # Connection as context manager
+        with self.conn as connection:
+            cursor = connection.cursor()
+            try:
+                cursor.execute(
+                    INSERT_OR_REPLACE_REFERENCE_SQL,
+                    {
+                        "reference_id": str(ref.ref_id),
+                        "type": ref.ref_type,
+                        "title": ref.title,
+                        "author": ref.author,
+                        "year": ref.year,
+                        "publisher": ref.publisher,
+                        "journal": ref.journal,
+                        "volume": ref.volume,
+                        "issue": ref.issue,
+                        "pages": ref.pages,
+                        "url": ref.url,
+                        "accessed_on": ref.accessed_on,
+                        "proceedings": ref.proceedings,
+                        "institution": ref.institution,
+                        "thesis_type": ref.thesis_type,
+                        "tags": ref.tags,
+                    },
+                )
+                # Only checks if INSERT was succesful.
+                if cursor.rowcount != 1:
+                    raise RuntimeError(
+                        f"(database) Reference was not saved: {ref.ref_id}, {ref.title}"
+                    )
+                return ref.ref_id
+            finally:
+                cursor.close()
 
     def find_all(self) -> list[ReferenceDTO]:
-        cursor = self.conn.execute(FIND_ALL_REFERENCES_SQL)
-        rows = cursor.fetchall()
-        return [
-            ReferenceDTO(
-                ref_id=uuid.UUID(row["reference_id"]),
-                ref_type=row["type"],
-                title=row["title"],
-                author=row["author"],
-                year=row["year"],
-                publisher=row["publisher"],
-                journal=row["journal"],
-                volume=row["volume"],
-                issue=row["issue"],
-                pages=row["pages"],
-                url=row["url"],
-                accessed_on=row["accessed_on"],
-                proceedings=row["proceedings"],
-                institution=row["institution"],
-                thesis_type=row["thesis_type"],
-                tags=row["tags"],
-            )
-            for row in rows
-        ]
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute(FIND_ALL_REFERENCES_SQL)
+            rows = cursor.fetchall()
+            return [
+                ReferenceDTO(
+                    ref_id=uuid.UUID(row["reference_id"]),
+                    ref_type=row["type"],
+                    title=row["title"],
+                    author=row["author"],
+                    year=row["year"],
+                    publisher=row["publisher"],
+                    journal=row["journal"],
+                    volume=row["volume"],
+                    issue=row["issue"],
+                    pages=row["pages"],
+                    url=row["url"],
+                    accessed_on=row["accessed_on"],
+                    proceedings=row["proceedings"],
+                    institution=row["institution"],
+                    thesis_type=row["thesis_type"],
+                    tags=row["tags"],
+                )
+                for row in rows
+            ]
+        finally:
+            cursor.close()
 
     def delete(self, ref_id: uuid.UUID) -> None:
-        cursor = self.conn.execute(
-            DELETE_REFERENCE_SQL,
-            (str(ref_id),),
-        )
-
-        if cursor.rowcount != 1:
-            raise RuntimeError(f"(database) Reference was not deleted: {ref_id}")
-        self.conn.commit()
+        # Connection as context manager
+        with self.conn as connection:
+            cursor = connection.cursor()
+            try:
+                cursor.execute(
+                    DELETE_REFERENCE_SQL,
+                    (str(ref_id),),
+                )
+                if cursor.rowcount != 1:
+                    raise RuntimeError(
+                        f"(database) Reference was not deleted: {ref_id}"
+                    )
+            finally:
+                cursor.close()

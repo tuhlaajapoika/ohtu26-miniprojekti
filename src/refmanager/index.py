@@ -83,16 +83,13 @@ def main() -> None:
     # Prepare and run
     console_io = ConsoleIO()
     try:
-        sqlite_repository = SqliteReferenceRepository(db_file=DATABASE_FILE)
-        app = App(ref_repository=sqlite_repository, io=console_io)
-        try:
+        with SqliteReferenceRepository(db_file=DATABASE_FILE) as repository:
+            # repository = SqliteReferenceRepository(db_file=DATABASE_FILE)
+            app = App(ref_repository=repository, io=console_io)
             if args.command == "export":
                 app.run(command=args.command, export_path=args.output)
             else:
                 app.run(command=args.command, tags=getattr(args, "tag", None))
-        finally:
-            # quit gracefully, commit changes to the database.
-            app.quit()
     except KeyboardInterrupt:
         console_io.write(f"{os.linesep}User interrupt captured.")
         sys.exit(130)
@@ -105,7 +102,7 @@ def main() -> None:
     except OSError as e:
         console_io.write(f"ERROR: {e}")
         sys.exit(1)
-    except sqlite3.OperationalError as e:
+    except sqlite3.IntegrityError as e:
         console_io.write(f"ERROR: {e}")
         sys.exit(1)
 

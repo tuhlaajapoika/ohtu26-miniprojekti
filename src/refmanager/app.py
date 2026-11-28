@@ -1,7 +1,7 @@
 from refmanager.services.reference_runner import ReferenceRunner
 
 
-class App:
+class App:  # pylint: disable=too-few-public-methods
     """Application entry point that delegates commands to ReferenceRunner."""
 
     def __init__(self, ref_repository, io):
@@ -15,7 +15,3 @@ class App:
             self.runner.run(command, tags=tags)
         else:
             self.runner.run(command, export_path=export_path)
-
-    def quit(self):
-        """Prepares the program for graceful exit"""
-        self.repository.close()
