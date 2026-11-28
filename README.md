@@ -33,6 +33,16 @@ refmanager
 python3 src/refmanager/index.py
 ```
 
+### Tagit
+
+Viitteeseen voi lisätä tageja uutta viitettä luodessa:
+
+```shell
+uv run refmanager new --tag koodi ohjelmointi
+```
+
+Jos `--tag`-argumenttia ei anna, ohjelma kysyy tagit lomakkeella (erota pilkulla).
+
 [Muita muistiinpanoja](/docs/development-notes.md)
 
 ### Definition of Done
